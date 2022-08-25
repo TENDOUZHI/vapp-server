@@ -1,8 +1,9 @@
-use std::any::Any;
+use std::{any::Any, fs};
 
 use super::{parser::parser,renderer::initial_project};
 use actix_web::{ get, post, web::Json, HttpResponse, Responder};
 use serde::Deserialize;
+use hello_macro_derive::{self, Entity};
 #[get("/")]
 pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -23,7 +24,7 @@ pub struct Info {
     pub content: Option<String>,
     pub children: Vec<Info>,
 }
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug,Clone,Entity)]
 pub struct Style {
     pub width: String,
     pub height: String,
@@ -49,9 +50,35 @@ pub struct Style {
     pub alignContent: String,
     pub alignItems: String,
 }
+
+#[derive(Entity,Debug)]
+struct Book {
+    id: u64,
+    title:String,
+    pages: u64,
+    author: String
+}
+impl Book {
+    fn to_vec(&self) {
+        println!("{:?}",self);
+    }
+}
+
+
+
 #[post("/vnode")]
 pub async fn vnode(info: Json<Info>) -> impl Responder {
-    initial_project(info.into_inner());
-    // parser(info.into_inner());
+    // initial_project(info.into_inner());
+    let select_sql = Book::select();
+    let size = Book::size();
+    let book = Book{
+        id:21,
+        title:"sss".to_string(),
+        pages:642,
+        author:"ooo".to_string()
+    };
+    // println!("{:?}",select_sql);
+    // println!("{:?}",size);
+    println!("{:?}",book.to_vec());
     HttpResponse::Ok().body("we accepted it")
 }
