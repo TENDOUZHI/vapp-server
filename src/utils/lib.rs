@@ -51,17 +51,50 @@ pub struct Style {
     pub alignItems: String,
 }
 
-#[derive(Entity,Debug)]
-struct Book {
-    id: u64,
-    title:String,
-    pages: u64,
-    author: String
-}
-impl Book {
-    fn to_vec(&self) {
-        println!("{:?}",self);
+impl Style {
+    pub fn to_style_sheet(&self) -> String {
+        self.parser()
     }
+
+    fn parser(&self) -> String {
+        let vec_style = self.vec_style();
+        let mut style_line = String::from("");
+        for (name, value) in vec_style {
+            style_line = format!("{}{}:{};",style_line,name,value);
+            // println!("{}:{};",name,value)
+        }
+        style_line
+    }
+
+    fn vec_style(&self) -> Vec<(&str, &String)> {
+        let mut style_vec = vec![];
+        style_vec.push(("width",&self.width));
+        style_vec.push(("height",&self.width));
+        style_vec.push(("fontSize",&self.width));
+        style_vec.push(("color",&self.width));
+        style_vec.push(("marginTop",&self.width));
+        style_vec.push(("marginBottom",&self.width));
+        style_vec.push(("marginLeft",&self.width));
+        style_vec.push(("marginRight",&self.width));
+        style_vec.push(("paddingTop",&self.width));
+        style_vec.push(("paddingBottom",&self.width));
+        style_vec.push(("paddingLeft",&self.width));
+        style_vec.push(("paddingRight",&self.width));
+        style_vec.push(("borderRadius",&self.width));
+        style_vec.push(("borderWidth",&self.width));
+        style_vec.push(("borderColor",&self.width));
+        style_vec.push(("backgroundColor",&self.width));
+        style_vec.push(("opacity",&self.width));
+        style_vec.push(("display",&self.width));
+        style_vec.push(("flexDirection",&self.width));
+        style_vec.push(("justifyContent",&self.width));
+        style_vec.push(("justifyItems",&self.width));
+        style_vec.push(("alignContent",&self.width));
+        style_vec.push(("alignItems",&self.width));
+        style_vec
+    }
+
+
 }
 
 
@@ -69,16 +102,6 @@ impl Book {
 #[post("/vnode")]
 pub async fn vnode(info: Json<Info>) -> impl Responder {
     // initial_project(info.into_inner());
-    let select_sql = Book::select();
-    let size = Book::size();
-    let book = Book{
-        id:21,
-        title:"sss".to_string(),
-        pages:642,
-        author:"ooo".to_string()
-    };
-    // println!("{:?}",select_sql);
-    // println!("{:?}",size);
-    println!("{:?}",book.to_vec());
+    let sy = info.into_inner().style;
     HttpResponse::Ok().body("we accepted it")
 }
