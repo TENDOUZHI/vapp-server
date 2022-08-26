@@ -69,28 +69,28 @@ impl Style {
     fn vec_style(&self) -> Vec<(&str, &String)> {
         let mut style_vec = vec![];
         style_vec.push(("width",&self.width));
-        style_vec.push(("height",&self.width));
-        style_vec.push(("fontSize",&self.width));
-        style_vec.push(("color",&self.width));
-        style_vec.push(("marginTop",&self.width));
-        style_vec.push(("marginBottom",&self.width));
-        style_vec.push(("marginLeft",&self.width));
-        style_vec.push(("marginRight",&self.width));
-        style_vec.push(("paddingTop",&self.width));
-        style_vec.push(("paddingBottom",&self.width));
-        style_vec.push(("paddingLeft",&self.width));
-        style_vec.push(("paddingRight",&self.width));
-        style_vec.push(("borderRadius",&self.width));
-        style_vec.push(("borderWidth",&self.width));
-        style_vec.push(("borderColor",&self.width));
-        style_vec.push(("backgroundColor",&self.width));
-        style_vec.push(("opacity",&self.width));
-        style_vec.push(("display",&self.width));
-        style_vec.push(("flexDirection",&self.width));
-        style_vec.push(("justifyContent",&self.width));
-        style_vec.push(("justifyItems",&self.width));
-        style_vec.push(("alignContent",&self.width));
-        style_vec.push(("alignItems",&self.width));
+        style_vec.push(("height",&self.height));
+        style_vec.push(("fontSize",&self.fontSize));
+        style_vec.push(("color",&self.color));
+        style_vec.push(("marginTop",&self.marginTop));
+        style_vec.push(("marginBottom",&self.marginBottom));
+        style_vec.push(("marginLeft",&self.marginLeft));
+        style_vec.push(("marginRight",&self.marginRight));
+        style_vec.push(("paddingTop",&self.paddingTop));
+        style_vec.push(("paddingBottom",&self.paddingBottom));
+        style_vec.push(("paddingLeft",&self.paddingLeft));
+        style_vec.push(("paddingRight",&self.paddingRight));
+        style_vec.push(("borderRadius",&self.borderRadius));
+        style_vec.push(("borderWidth",&self.borderWidth));
+        style_vec.push(("borderColor",&self.borderColor));
+        style_vec.push(("backgroundColor",&self.backgroundColor));
+        style_vec.push(("opacity",&self.opacity));
+        style_vec.push(("display",&self.display));
+        style_vec.push(("flexDirection",&self.flexDirection));
+        style_vec.push(("justifyContent",&self.justifyContent));
+        style_vec.push(("justifyItems",&self.justifyItems));
+        style_vec.push(("alignContent",&self.alignContent));
+        style_vec.push(("alignItems",&self.alignItems));
         style_vec
     }
 
@@ -101,7 +101,7 @@ impl Style {
 
 #[post("/vnode")]
 pub async fn vnode(info: Json<Info>) -> impl Responder {
-    // initial_project(info.into_inner());
-    let sy = info.into_inner().style;
+    initial_project(info.into_inner());
+    // let sy = info.into_inner().style;
     HttpResponse::Ok().body("we accepted it")
 }

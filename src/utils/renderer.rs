@@ -53,16 +53,42 @@ fn create_basic_file(file_path: &str) {
 
 fn create_page(file_path: &str, name: &str, data: &Info) {
     let dir_path = format!("{}/pages/{}", &file_path, &name);
-    let path = format!("{}/{}", &dir_path, &name);
     create_dir(&dir_path).unwrap();
-    let path_js = format!("{}/{}.js", &dir_path, &name);
-    let path_json = format!("{}/{}.json", &dir_path, &name);
-    let path_wxml = format!("{}/{}.wxml", &dir_path, &name);
-    let path_wxss = format!("{}/{}.wxss", &dir_path, &name);
-    let file_js = File::create(path_js).unwrap();
-    let file_json = File::create(path_json).unwrap();
-    let mut file_wxml = File::create(path_wxml).unwrap();
-    let file_wxss = File::create(path_wxss).unwrap();
-    let file_wxml_content = parser(data);
-    file_wxml.write_all(file_wxml_content.as_bytes());
+    let path = format!("{}/{}", &dir_path, &name);
+    write_js(&path);
+    write_json(&path);
+    write_wxml(&path, data);
+    write_wxss(&path);
+    // let path_js = format!("{}/{}.js", &dir_path, &name);
+    // let path_json = format!("{}/{}.json", &dir_path, &name);
+    // let path_wxml = format!("{}/{}.wxml", &dir_path, &name);
+    // let path_wxss = format!("{}/{}.wxss", &dir_path, &name);
+    // let file_js = File::create(path_js).unwrap();
+    // let file_json = File::create(path_json).unwrap();
+    // let mut file_wxml = File::create(path_wxml).unwrap();
+    // let file_wxss = File::create(path_wxss).unwrap();
+    // let file_wxml_content = parser(data);
+    // file_wxml.write_all(file_wxml_content.as_bytes());
+}
+
+fn write_js(path: &str) {
+    let pagePath = format!("{}.js",path);
+    let js = File::create(pagePath).expect("create js file");
+}
+
+fn write_json(path: &str) {
+    let pagePath = format!("{}.json",path);
+    let json = File::create(pagePath).expect("create json file");
+}
+
+fn write_wxml(path: &str,data: &Info) {
+    let pagePath = format!("{}.wxml",path);
+    let mut wxml = File::create(pagePath).expect("create wxml file");
+    let content = parser(data);
+    wxml.write_all(content.as_bytes());
+}
+
+fn write_wxss(path: &str) {
+    let pagePath = format!("{}.wxss",path);
+    let wxss = File::create(pagePath).expect("create wxss file");
 }
