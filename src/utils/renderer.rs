@@ -4,7 +4,32 @@ use std::{
     path::Path,
 };
 
-use super::{lib::Info, parser::parser, json_renderer::{write_app_json, write_project_config_json, write_sitmap_json}};
+use super::{
+    ast::{Info, VNode, Vapp},
+    json_renderer::{write_app_json, write_project_config_json, write_sitmap_json},
+    parser::parser, parser_wxss::parser_wxss,
+};
+
+pub fn parse_vapp(vapp: Vapp) {
+    let project_name = vapp.project_name;
+    let dev_path = format!("mini/{}", &project_name);
+    let path = Path::new(&dev_path);
+    let file_path = format!("{}", path.to_str().expect("file path"));
+    remove_dir_all(&path).expect("occur at remove_dir_all");
+    create_dir(&path).expect("create_root_dir");
+    create_pages_dir(&file_path);
+    create_utils_dir(&file_path);
+    create_basic_file(&file_path);
+    // loop render pages
+    let routes = vapp.routes;
+    for page in routes {
+        create_page(
+            &file_path,
+            &page.name,
+            &page.vnode.expect("traverse routes"),
+        )
+    }
+}
 
 pub fn initial_project(info: Info) {
     let project_name = &info.name;
@@ -13,19 +38,17 @@ pub fn initial_project(info: Info) {
     remove_dir_all(&path).expect("occur at remove_dir_all");
     create_dir(&path).expect("create_root_dir");
     let file_path = format!("{}", path.to_str().unwrap());
-    create_pages(&file_path);
-    create_utils(&file_path);
+    create_pages_dir(&file_path);
+    create_utils_dir(&file_path);
     create_basic_file(&file_path);
-    create_page(&file_path, "index", &info);
-    create_page(&file_path, "try", &info);
 }
 
-fn create_pages(file_path: &str) {
+fn create_pages_dir(file_path: &str) {
     let path = format!("{}/pages", file_path);
     create_dir(path).expect("create_pages");
 }
 
-fn create_utils(file_path: &str) {
+fn create_utils_dir(file_path: &str) {
     let path = format!("{}/utils", file_path);
     create_dir(path).expect("create_utils");
 }
@@ -48,47 +71,38 @@ fn create_basic_file(file_path: &str) {
     write_app_json(&mut app_json).expect("write in app.json");
     write_project_config_json(&mut project_config).expect("write in project.config.json");
     write_sitmap_json(&mut sitmap_json).expect("write in sitmap.json");
-    
 }
 
-fn create_page(file_path: &str, name: &str, data: &Info) {
+fn create_page(file_path: &str, name: &str, data: &VNode) {
     let dir_path = format!("{}/pages/{}", &file_path, &name);
-    create_dir(&dir_path).unwrap();
+    create_dir(&dir_path).expect("create page dir");
     let path = format!("{}/{}", &dir_path, &name);
     write_js(&path);
     write_json(&path);
     write_wxml(&path, data);
-    write_wxss(&path);
-    // let path_js = format!("{}/{}.js", &dir_path, &name);
-    // let path_json = format!("{}/{}.json", &dir_path, &name);
-    // let path_wxml = format!("{}/{}.wxml", &dir_path, &name);
-    // let path_wxss = format!("{}/{}.wxss", &dir_path, &name);
-    // let file_js = File::create(path_js).unwrap();
-    // let file_json = File::create(path_json).unwrap();
-    // let mut file_wxml = File::create(path_wxml).unwrap();
-    // let file_wxss = File::create(path_wxss).unwrap();
-    // let file_wxml_content = parser(data);
-    // file_wxml.write_all(file_wxml_content.as_bytes());
+    write_wxss(&path, data);
 }
 
 fn write_js(path: &str) {
-    let pagePath = format!("{}.js",path);
-    let js = File::create(pagePath).expect("create js file");
+    let page_path = format!("{}.js", path);
+    let js = File::create(page_path).expect("create js file");
 }
 
 fn write_json(path: &str) {
-    let pagePath = format!("{}.json",path);
-    let json = File::create(pagePath).expect("create json file");
+    let page_path = format!("{}.json", path);
+    let json = File::create(page_path).expect("create json file");
 }
 
-fn write_wxml(path: &str,data: &Info) {
-    let pagePath = format!("{}.wxml",path);
-    let mut wxml = File::create(pagePath).expect("create wxml file");
+fn write_wxml(path: &str, data: &VNode) {
+    let page_path = format!("{}.wxml", path);
+    let mut wxml = File::create(page_path).expect("create wxml file");
     let content = parser(data);
-    wxml.write_all(content.as_bytes());
+    wxml.write_all(content.as_bytes()).expect("writing wxml");
 }
 
-fn write_wxss(path: &str) {
-    let pagePath = format!("{}.wxss",path);
-    let wxss = File::create(pagePath).expect("create wxss file");
+fn write_wxss(path: &str, data: &VNode) {
+    let page_path = format!("{}.wxss", path);
+    let content = parser_wxss(data);
+    let mut wxss = File::create(page_path).expect("create wxss file");
+    wxss.write_all(content.as_bytes()).expect("writint wxss");
 }
