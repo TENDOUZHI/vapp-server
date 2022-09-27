@@ -1,11 +1,13 @@
-use std::{any::Any, fs};
+use std::path::{Path};
 
-use crate::utils::{ast::{Info, Vapp}, renderer::parse_vapp};
+use super::renderer::initial_project;
+use crate::utils::{
+    ast::{Info, Vapp},
+    renderer::parse_vapp, compress::compress,
+};
+use actix_files::{ NamedFile};
+use actix_web::{get, post, web::Json, HttpResponse, Responder, Result};
 
-use super::{parser::parser,renderer::initial_project};
-use actix_web::{ get, post, web::Json, HttpResponse, Responder};
-use serde::Deserialize;
-use hello_macro_derive::{self, Entity};
 #[get("/")]
 pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -18,14 +20,15 @@ pub async fn echo(req_body: String) -> impl Responder {
 #[post("/vnode")]
 pub async fn vnode(info: Json<Info>) -> impl Responder {
     initial_project(info.into_inner());
-    // let sy = info.into_inner().style;
     HttpResponse::Ok().body("we accepted it")
 }
 
 #[post("/vapp")]
-pub async fn vapp(info: Json<Vapp>) -> impl Responder {
+pub async fn vapp(info: Json<Vapp>) -> Result<NamedFile> {
+    let project_name = &info.project_name.clone();
+    let raw_path = format!("mini/{}.zip",&project_name);
+    let path = Path::new(&raw_path);
     parse_vapp(info.into_inner());
-    // println!("{:?}",info.into_inner());
-    // let sy = info.into_inner().style;
-    HttpResponse::Ok().body("we accepted it")
+    compress(project_name);
+    Ok(NamedFile::open(path).expect("return file"))
 }

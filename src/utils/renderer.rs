@@ -13,9 +13,11 @@ use super::{
 pub fn parse_vapp(vapp: Vapp) {
     let project_name = vapp.project_name;
     let dev_path = format!("mini/{}", &project_name);
+    let root_path = "mini/".to_string();
     let path = Path::new(&dev_path);
     let file_path = format!("{}", path.to_str().expect("file path"));
-    remove_dir_all(&path).expect("occur at remove_dir_all");
+    remove_dir_all(&root_path).expect("occur at remove_dir_all");
+    create_dir(&root_path).expect("create mini dir");
     create_dir(&path).expect("create_root_dir");
     create_pages_dir(&file_path);
     create_utils_dir(&file_path);

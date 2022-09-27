@@ -1,9 +1,7 @@
 extern crate proc_macro;
 
 use crate::proc_macro::TokenStream;
-use proc_macro2::{self, token_stream};
 use quote::quote;
-use syn::spanned::Spanned;
 use syn::{
     self,
     Data::Struct,
