@@ -1,15 +1,24 @@
-use std::path::{Path};
+use std::path::Path;
 
 use super::renderer::initial_project;
 use crate::utils::{
     ast::{Info, Vapp},
-    renderer::parse_vapp, compress::compress,
+    compress::compress,
+    jdbc::{users::{Hooks, Users}, traits::Instance},
+    renderer::parse_vapp,
 };
-use actix_files::{ NamedFile};
-use actix_web::{get, post, web::Json, HttpResponse, Responder, Result};
+use actix_files::NamedFile;
+use actix_web::{
+    get, post,
+    web::{self, Json},
+    HttpResponse, Responder, Result,
+};
+use sqlx::PgPool;
 
-#[get("/")]
-pub async fn hello() -> impl Responder {
+#[get("/hello")]
+pub async fn hello(pool: web::Data<PgPool>) -> impl Responder {
+    let hooks = Hooks;
+    hooks.select(&pool).await;
     HttpResponse::Ok().body("Hello world!")
 }
 #[post("/echo")]
@@ -26,7 +35,7 @@ pub async fn vnode(info: Json<Info>) -> impl Responder {
 #[post("/vapp")]
 pub async fn vapp(info: Json<Vapp>) -> Result<NamedFile> {
     let project_name = &info.project_name.clone();
-    let raw_path = format!("mini/{}.zip",&project_name);
+    let raw_path = format!("mini/{}.zip", &project_name);
     let path = Path::new(&raw_path);
     parse_vapp(info.into_inner());
     compress(project_name);

@@ -1,7 +1,7 @@
 use std::{
     fs::{ File},
     io::{Read, Seek, Write},
-    path::Path, fmt::format,
+    path::Path,
 };
 use walkdir::{WalkDir,DirEntry};
 use zip::{write::FileOptions, CompressionMethod};
@@ -49,14 +49,14 @@ where
         let path = entry.path();
         let name = path.strip_prefix(Path::new(prefix)).unwrap();
         if path.is_file() {
-            println!("adding file {:?} as {:?} ...", path, name);
+            // println!("adding file {:?} as {:?} ...", path, name);
             zip.start_file(name.to_string_lossy(), options).unwrap();
             let mut f = File::open(path).unwrap();
             f.read_to_end(&mut buffer).unwrap();
             zip.write_all(&buffer).unwrap();
             buffer.clear();
         } else if name.as_os_str().len() != 0 {
-            zip.add_directory(name.to_string_lossy(), options);
+            zip.add_directory(name.to_string_lossy(), options).unwrap();
         }
     }
     zip.finish().unwrap();
