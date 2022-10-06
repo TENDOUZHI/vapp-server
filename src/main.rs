@@ -1,11 +1,11 @@
-use actix_web::{App, HttpServer, web};
+use actix_web::{web, App, HttpServer};
 mod utils;
 use actix_cors::Cors;
 use actix_web::http::header;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
-use utils::{lib::{hello, vapp}, jdbc::{users::Hooks, traits::Instance}};
+use utils::{lib::{hello, vapp}, routes::user_route::login};
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -15,17 +15,13 @@ async fn main() -> std::io::Result<()> {
         .connect(&connect_str)
         .await
         .unwrap();
-    // let list = sqlx::query!("select * from users").fetch_all(&pool).await.unwrap();
-    // for ls in list {
-    //     println!("{:?}",ls);
-    // }
-    
-    
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .service(vapp)
             .service(hello)
+            .service(login)
             .wrap(
                 Cors::default()
                     // .allowed_origin("http://localhost:5173")

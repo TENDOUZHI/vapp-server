@@ -1,27 +1,20 @@
-use std::fmt::Result;
-
-use super::traits::Instance;
+use super::{
+    tabels::{InstanceEn, InstancePool, Users},
+    traits::HooksFn,
+};
 use actix_web::http::Error;
 use async_trait::async_trait;
 use sqlx::{query, Pool, Postgres};
+use std::result::Result;
 
 #[derive(Debug)]
 pub struct Hooks;
 
-#[derive(Debug)]
-pub struct Users {
-    pub id: i32,
-    pub username: String,
-    pub password: String,
-    pub telephone: Option<i64>,
-    pub avatar: Option<Vec<u8>>,
-}
-
 #[async_trait]
-impl Instance for Hooks {
+impl HooksFn for Hooks {
     fn create(&self, pool: &Pool<Postgres>) {}
     fn update(&self, pool: &Pool<Postgres>) {}
-    async fn select(&self, pool: &Pool<Postgres>) {
+    async fn select(&self, pool: &Pool<Postgres>) -> Result<InstancePool, Error> {
         let users = query!("select * from users")
             .fetch_all(pool)
             .await
@@ -34,8 +27,10 @@ impl Instance for Hooks {
                 password: user.password,
                 telephone: user.telephone,
                 avatar: user.avatar,
+                email: user.email,
             });
         }
+        Ok(InstanceEn::Users(user_info))
     }
     fn insert(&self, pool: &Pool<Postgres>) {}
     fn delete(&self, pool: &Pool<Postgres>) {}

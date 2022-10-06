@@ -4,7 +4,7 @@ use super::renderer::initial_project;
 use crate::utils::{
     ast::{Info, Vapp},
     compress::compress,
-    jdbc::{users::{Hooks, Users}, traits::Instance},
+    jdbc::{traits::HooksFn, users::Hooks},
     renderer::parse_vapp,
 };
 use actix_files::NamedFile;
@@ -17,8 +17,9 @@ use sqlx::PgPool;
 
 #[get("/hello")]
 pub async fn hello(pool: web::Data<PgPool>) -> impl Responder {
-    let hooks = Hooks;
-    hooks.select(&pool).await;
+    // let hooks = Hooks;
+    // let user = hooks.select(&pool).await.unwrap();
+    // println!("{:?}",user);
     HttpResponse::Ok().body("Hello world!")
 }
 #[post("/echo")]
