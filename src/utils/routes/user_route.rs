@@ -18,9 +18,17 @@ pub async fn login(pool: web::Data<PgPool>, payload: Json<LoginPassword>) -> imp
         let res = login_handler(&pool, &info, LoginType::Name).await;
         return login_response(res);
     } else if let Some(_) = info.email {
+        if let Some(_) = info.emessage {
+            let res = login_handler(&pool, &info, LoginType::Emessage).await;
+            return login_response(res);
+        }
         let res = login_handler(&pool, &info, LoginType::Email).await;
         return login_response(res);
     } else if let Some(_) = info.telephone {
+        if let Some(_) = info.message {
+            let res = login_handler(&pool, &info, LoginType::Message).await;
+            return login_response(res);
+        }
         let res = login_handler(&pool, &info, LoginType::Tel).await;
         return login_response(res);
     } else {

@@ -5,12 +5,16 @@ pub struct LoginPassword {
     pub username: Option<String>,
     pub telephone: Option<String>,
     pub email: Option<String>,
-    pub password: String
+    pub message: Option<String>,
+    pub emessage:Option<String>,
+    pub password: String,
 }
 
 #[derive(Debug)]
 pub enum LoginType {
     Name,
     Tel,
-    Email
+    Email,
+    Message,
+    Emessage
 }

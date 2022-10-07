@@ -1,14 +1,20 @@
 use actix_web::{web, App, HttpServer};
 mod utils;
 use actix_cors::Cors;
+use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
+use actix_web::cookie::Key;
 use actix_web::http::header;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
-use utils::{lib::{hello, vapp}, routes::user_route::login};
+use utils::{
+    lib::{hello, vapp},
+    routes::user_route::login,
+};
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+    // coonect to postgres
     let connect_str = env::var("DATABASE_URL").expect("geting database env url");
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -16,9 +22,17 @@ async fn main() -> std::io::Result<()> {
         .await
         .unwrap();
 
+    // use session middleware
+    let secret_key = Key::generate();
+    let redis_connection_string = "127.0.0.1::6379";
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
+            .wrap(SessionMiddleware::new(
+                RedisActorSessionStore::new(redis_connection_string),
+                secret_key.clone(),
+            ))
             .service(vapp)
             .service(hello)
             .service(login)

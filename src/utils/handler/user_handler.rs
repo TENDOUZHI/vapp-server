@@ -1,12 +1,13 @@
-use actix_web::{http::StatusCode, HttpResponse, Responder};
+use actix_web::{http::StatusCode, HttpResponse};
 use sqlx::{Pool, Postgres};
+use std::io::{Error,ErrorKind};
 
 use crate::utils::routes::ast::{LoginPassword, LoginType};
 
 pub fn login_response(res: Result<String, String>) -> HttpResponse {
     return match res {
         Ok(v) => HttpResponse::Ok().body(v),
-        Err(e) => HttpResponse::Ok().status(StatusCode::FORBIDDEN).body(e),
+        Err(e) => HttpResponse::from_error(Error::new(ErrorKind::ConnectionRefused, e)),
     };
 }
 
@@ -76,5 +77,26 @@ pub async fn login_handler(
                 Err("email login failed".to_string())
             }
         }
+        LoginType::Message => {
+            let res = sqlx::query!(
+                r#"
+                    select * from users where email=$1
+            "#,
+                info.email
+            )
+            .fetch_all(pool)
+            .await
+            .expect("username login");
+            if res.len() != 0 {
+                if res[0].password == info.password {
+                    Ok("email login successfully".to_string())
+                } else {
+                    Err("password incorrect".to_string())
+                }
+            } else {
+                Err("email login failed".to_string())
+            }
+        },
+        LoginType::Emessage => todo!(),
     }
 }
