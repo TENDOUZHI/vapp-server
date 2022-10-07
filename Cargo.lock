@@ -203,23 +203,19 @@ dependencies = [
 
 [[package]]
 name = "actix-session"
-version = "0.7.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43da8b818ae1f11049a4d218975345fe8e56ce5a5f92c11f972abcff5ff80e87"
+checksum = "53b253be4da7f0a778831d0c8b0c2de4ce8ea30f3b1d14d11843a296e53d21db"
 dependencies = [
- "actix",
- "actix-redis",
  "actix-service",
  "actix-utils",
  "actix-web",
- "anyhow",
- "async-trait",
  "derive_more",
- "futures-core",
- "rand 0.8.5",
+ "futures-util",
+ "log",
  "serde",
  "serde_json",
- "tracing",
+ "time 0.3.13",
 ]
 
 [[package]]
@@ -384,12 +380,6 @@ checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
 ]
-
-[[package]]
-name = "anyhow"
-version = "1.0.65"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98161a4e3e2184da77bb14f02184cdd111e83bbbcc9979dfee3c44b9a85f5602"
 
 [[package]]
 name = "ascii_utils"
@@ -2771,6 +2761,7 @@ version = "0.1.0"
 dependencies = [
  "actix-cors",
  "actix-files",
+ "actix-redis",
  "actix-session",
  "actix-web",
  "async-trait",
@@ -2782,6 +2773,7 @@ dependencies = [
  "lettre 0.10.1",
  "lettre_email",
  "postgres",
+ "rand 0.8.5",
  "rust-crypto",
  "serde",
  "serde_json",
