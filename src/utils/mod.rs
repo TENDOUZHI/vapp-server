@@ -8,3 +8,4 @@ pub mod compress;
 pub mod jdbc;
 pub mod routes;
 pub mod handler;
+pub mod jwt;

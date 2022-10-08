@@ -1,13 +1,23 @@
 use actix_session::Session;
-use actix_web::HttpResponse;
+use actix_web::{HttpResponse};
 use crypto::{digest::Digest, sha1::Sha1};
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
 use sqlx::{Pool, Postgres};
 use std::io::{Error, ErrorKind};
 
-use crate::utils::routes::ast::{CodeType, LoginPassword, LoginType};
+use crate::utils::{
+    jwt::jwt::genarate_token,
+    routes::ast::{CodeType, LoginPassword, LoginResponse, LoginType},
+};
 
-pub fn login_register_response(res: Result<String, String>) -> HttpResponse {
+// pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
+//     return match res {
+//         Ok(v) => HttpResponse::Ok().body("v"),
+//         Err(e) => HttpResponse::from_error(Error::new(ErrorKind::ConnectionRefused, e)),
+//     };
+// }
+
+pub fn register_response(res: Result<String, String>) -> HttpResponse {
     return match res {
         Ok(v) => HttpResponse::Ok().body(v),
         Err(e) => HttpResponse::from_error(Error::new(ErrorKind::ConnectionRefused, e)),
@@ -19,7 +29,7 @@ pub async fn login_handler(
     info: &LoginPassword,
     login_type: LoginType,
     session: Session,
-) -> Result<String, String> {
+) -> Result<LoginResponse, String> {
     match login_type {
         LoginType::Name => {
             let res = sqlx::query!(
@@ -34,7 +44,14 @@ pub async fn login_handler(
             if res.len() != 0 {
                 let password = password_crypto(info.password.as_ref().unwrap());
                 if res[0].password == password {
-                    Ok("username login successfully".to_string())
+                    let token = genarate_token(info.username.as_ref().unwrap().to_string());
+                    match token {
+                        Ok(token) => Ok(LoginResponse {
+                            message: "username login successfully".to_string(),
+                            token: Some(token),
+                        }),
+                        Err(_) => Err("token genarate error".to_owned()),
+                    }
                 } else {
                     Err("password incorrect".to_string())
                 }
@@ -55,7 +72,14 @@ pub async fn login_handler(
             if res.len() != 0 {
                 let password = password_crypto(info.password.as_ref().unwrap());
                 if res[0].password == password {
-                    Ok("telephone login successfully".to_string())
+                    let token = genarate_token(info.telephone.as_ref().unwrap().to_string());
+                    match token {
+                        Ok(token) => Ok(LoginResponse {
+                            message: "telephone login successfully".to_string(),
+                            token: Some(token),
+                        }),
+                        Err(_) => Err("token genarate error".to_owned()),
+                    }
                 } else {
                     Err("password incorrect".to_string())
                 }
@@ -76,7 +100,14 @@ pub async fn login_handler(
             if res.len() != 0 {
                 let password = password_crypto(info.password.as_ref().unwrap());
                 if res[0].password == password {
-                    Ok("email login successfully".to_string())
+                    let token = genarate_token(info.email.as_ref().unwrap().to_string());
+                    match token {
+                        Ok(token) => Ok(LoginResponse {
+                            message: "email login successfully".to_string(),
+                            token: Some(token),
+                        }),
+                        Err(_) => Err("token genarate error".to_owned()),
+                    }
                 } else {
                     Err("password incorrect".to_string())
                 }
@@ -97,7 +128,14 @@ pub async fn login_handler(
             if res.len() != 0 {
                 let password = password_crypto(info.password.as_ref().unwrap());
                 if res[0].password == password {
-                    Ok("email login successfully".to_string())
+                    let token = genarate_token(info.email.as_ref().unwrap().to_string());
+                    match token {
+                        Ok(token) => Ok(LoginResponse {
+                            message: "email login successfully".to_string(),
+                            token: Some(token),
+                        }),
+                        Err(_) => Err("token genarate error".to_owned()),
+                    }
                 } else {
                     Err("password incorrect".to_string())
                 }
@@ -122,9 +160,15 @@ pub async fn login_handler(
                 let code = session
                     .get::<String>(&email)
                     .expect("get verify code from redis");
-                println!("{:?}", code);
                 if code == info.emessage {
-                    Ok("email login successfully".to_string())
+                    let token = genarate_token(info.email.as_ref().unwrap().to_string());
+                    match token {
+                        Ok(token) => Ok(LoginResponse {
+                            message: "email login successfully".to_string(),
+                            token: Some(token),
+                        }),
+                        Err(_) => Err("token genarate error".to_owned()),
+                    }
                 } else {
                     Err("email verify code incorrect".to_string())
                 }

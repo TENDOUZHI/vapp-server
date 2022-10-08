@@ -9,8 +9,10 @@ use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use sqlx::PgPool;
 
 use crate::utils::{
-    handler::user_handler::{email_send, login_handler, login_register_response, register_handler},
-    routes::ast::{CodeType, LoginPassword, LoginType, VerifyCode},
+    handler::user_handler::{
+        email_send, login_handler, register_handler, register_response,
+    },
+    routes::ast::{CodeType, LoginPassword, LoginType, VerifyCode, LoginResponse},
 };
 
 #[post("/login")]
@@ -22,43 +24,87 @@ pub async fn login(
     let info = payload.into_inner();
     if let Some(_) = info.username {
         let res = login_handler(&pool, &info, LoginType::Name, session).await;
-        return login_register_response(res);
+        match res {
+            Ok(v) => web::Json(v),
+            Err(e) => {
+                let msg = LoginResponse{
+                    message:e,
+                    token:None
+                };
+                web::Json(msg)
+            }
+        }
     } else if let Some(_) = info.email {
         if let Some(_) = info.emessage {
             let res = login_handler(&pool, &info, LoginType::Emessage, session).await;
-            return login_register_response(res);
+            match res {
+                Ok(v) => return web::Json(v),
+                Err(e) => {
+                    let msg = LoginResponse{
+                        message:e,
+                        token:None
+                    };
+                    return web::Json(msg);
+                }
+            }
         }
         let res = login_handler(&pool, &info, LoginType::Email, session).await;
-        return login_register_response(res);
+        match res {
+            Ok(v) => web::Json(v),
+            Err(e) => {
+                let msg = LoginResponse{
+                    message:e,
+                    token:None
+                };
+                web::Json(msg)
+            }
+        }
     } else if let Some(_) = info.telephone {
         if let Some(_) = info.message {
             let res = login_handler(&pool, &info, LoginType::Message, session).await;
-            return login_register_response(res);
+            match res {
+                Ok(v) => return web::Json(v),
+                Err(e) => {
+                    let msg = LoginResponse{
+                        message:e,
+                        token:None
+                    };
+                    return web::Json(msg);
+                }
+            }
         }
         let res = login_handler(&pool, &info, LoginType::Tel, session).await;
-        return login_register_response(res);
+        match res {
+            Ok(v) => web::Json(v),
+            Err(e) => {
+                let msg = LoginResponse{
+                    message:e,
+                    token:None
+                };
+                web::Json(msg)
+            }
+        }
     } else {
-        HttpResponse::Ok()
-            .status(StatusCode::FORBIDDEN)
-            .body("login failed")
+        let msg = LoginResponse{
+            message:"login failed".to_string(),
+            token:None
+        };
+        web::Json(msg)
     }
 }
 
 #[post("/register")]
-pub async fn register(
-    pool: web::Data<PgPool>,
-    payload: Json<LoginPassword>,
-) -> impl Responder {
+pub async fn register(pool: web::Data<PgPool>, payload: Json<LoginPassword>) -> impl Responder {
     let info = payload.into_inner();
     if let Some(_) = info.username {
         let res = register_handler(&pool, &info, LoginType::Name).await;
-        return login_register_response(res);
+        return register_response(res);
     } else if let Some(_) = info.email {
         let res = register_handler(&pool, &info, LoginType::Email).await;
-        return login_register_response(res);
+        return register_response(res);
     } else if let Some(_) = info.telephone {
         let res = register_handler(&pool, &info, LoginType::Tel).await;
-        return login_register_response(res);
+        return register_response(res);
     } else {
         HttpResponse::Ok()
             .status(StatusCode::FORBIDDEN)

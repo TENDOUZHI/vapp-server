@@ -10,6 +10,16 @@ pub struct LoginPassword {
     pub password: Option<String>,
 }
 
+#[derive(Deserialize,Serialize,Debug)]
+pub struct LoginResponse {
+    pub message: String,
+    pub token: Option<String>
+}
+
+pub struct ErrorMessage{
+    pub msg: String
+}
+
 #[derive(Debug)]
 pub enum LoginType {
     Name,

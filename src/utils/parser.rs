@@ -18,15 +18,15 @@ fn parse_node(vnode: &VNode) -> String {
         // 同一层内的节点
         let back_node:String;
         if node.children.len() == 0 {
-            back_node = write_tag(&node.name, node.content.as_ref().unwrap(),node.style.as_ref().unwrap().to_style_sheet(),node.class.clone().unwrap());
+            back_node = write_tag(&node.name, node.content.as_ref().unwrap(),node.class.clone().unwrap());
         } else {
-            back_node = write_tag(&node.name, &deep_node,node.style.as_ref().unwrap().to_style_sheet(),node.class.clone().unwrap());
+            back_node = write_tag(&node.name, &deep_node,node.class.clone().unwrap());
         }
         el = format!("{}{}", el, back_node)
     }
     el
 }
-fn write_tag(name: &str, content: &str, style: String, class: String) -> String {
+fn write_tag(name: &str, content: &str, class: String) -> String {
     format!("<{name} class={:?}>{content}</{name}>",class)
 }
 

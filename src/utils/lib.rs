@@ -1,9 +1,8 @@
-use std::path::Path;
 use super::renderer::initial_project;
 use crate::utils::{
     ast::{Info, Vapp},
     compress::compress,
-    renderer::parse_vapp,
+    renderer::parse_vapp, jwt::jwt::check_token,
 };
 use actix_files::NamedFile;
 use actix_session::Session;
@@ -12,16 +11,17 @@ use actix_web::{
     web::{self, Json},
     Error, HttpResponse, Responder, Result,
 };
-use crypto::sha2::Sha256;
+use chrono::{prelude::*, Duration};
 use crypto::digest::Digest;
+use crypto::sha2::Sha256;
+use jsonwebtoken::get_current_timestamp;
 use sqlx::PgPool;
+use std::path::Path;
 
 #[get("/hello")]
 pub async fn hello(pool: web::Data<PgPool>, session: Session) -> Result<HttpResponse, Error> {
-    let mut hasher = Sha256::new();
-    let text = String::from("56231");
-    hasher.input_str(&text);
-    println!("{} => {}",text,hasher.result_str());
+    let vali = check_token("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJWYXBwX0FjdGl4Iiwic3ViIjoiTm9ybWFsIHVzZXJzIiwiYXVkIjoid3p5IiwiZXhwIjoxNjY1MjM4MzI5NjA4LCJpYXQiOjE2NjUyMzgyNjk2MDgsIm5iZiI6MTY2NTIzODI2OTYwOH0.yF0ImMA7DckG4srAatmruOEKOcc3xQZYOoK-cbhTgOc".to_string());
+    println!("{vali}");
     Ok(HttpResponse::Ok().body("get"))
 }
 #[post("/echo")]
