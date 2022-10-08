@@ -1,5 +1,5 @@
 use actix_web::{
-    cookie::{time, Key, SameSite},
+    cookie::{time},
     web, App, HttpServer,
 };
 use actix_web::middleware;
@@ -19,7 +19,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::env;
 use utils::{
     lib::{echo, hello, vapp},
-    routes::user_route::{email_pass_code, login},
+    routes::user_route::{email_pass_code, login,register},
 };
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -33,8 +33,8 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
 
     // use session middleware
-    let secret_key = Key::generate();
-    let redis_connection_string = "127.0.0.1:6379";
+    // let secret_key = Key::generate();
+    // let redis_connection_string = "127.0.0.1:6379";
 
     HttpServer::new(move || {
         App::new()
@@ -42,6 +42,7 @@ async fn main() -> std::io::Result<()> {
             .service(vapp)
             .service(hello)
             .service(login)
+            .service(register)
             .service(echo)
             .service(email_pass_code)
             .wrap(CookieSession::signed(&[0; 32]) 

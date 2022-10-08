@@ -24,7 +24,8 @@ tokio-postgres = "0.7.7"
 chrono={version="0.4.19",features=["serde"]}
 dotenv="0.15.0"
 sqlx={version="0.6.2",features=["postgres","runtime-tokio-rustls","macros","chrono"]}
-rust-crypto = "0.2.36"
+rust-crypto="0.2.36"
+# crypto2 = "0.1.2"
 jsonwebtoken="8.1.1"
 zip = "0.6.2"
 walkdir = "2.3.2"

@@ -1,5 +1,4 @@
 use std::path::Path;
-
 use super::renderer::initial_project;
 use crate::utils::{
     ast::{Info, Vapp},
@@ -13,28 +12,17 @@ use actix_web::{
     web::{self, Json},
     Error, HttpResponse, Responder, Result,
 };
+use crypto::sha2::Sha256;
+use crypto::digest::Digest;
 use sqlx::PgPool;
 
 #[get("/hello")]
 pub async fn hello(pool: web::Data<PgPool>, session: Session) -> Result<HttpResponse, Error> {
-    // let varify_code: String = thread_rng().sample_iter(&Alphanumeric).take(6).map(char::from).collect();
-    // let mut counter = 1;
-    println!("{:?}",session.entries());
-    // session.insert("counter", 1)?;
-    if let Some(count) = session.get::<i32>("counter")? {
-        println!("SESSION value: {}", count);
-        // modify the session state
-        session.insert("counter", count + 1)?;
-    } else {
-        session.insert("counter", 1)?;
-    }
-    // session.clear();
-    // println!("{:?}",&varify_code);
-    // session.insert("counter", varify_code).expect("insert");
-    Ok(HttpResponse::Ok().body(format!(
-        "Count is {:?}!",
-        session.get::<i32>("counter")?.unwrap()
-    )))
+    let mut hasher = Sha256::new();
+    let text = String::from("56231");
+    hasher.input_str(&text);
+    println!("{} => {}",text,hasher.result_str());
+    Ok(HttpResponse::Ok().body("get"))
 }
 #[post("/echo")]
 pub async fn echo(req_body: String, session: Session) -> impl Responder {
@@ -50,7 +38,6 @@ pub async fn echo(req_body: String, session: Session) -> impl Responder {
 
 #[post("/vnode")]
 pub async fn vnode(info: Json<Info>) -> impl Responder {
-    
     initial_project(info.into_inner());
     HttpResponse::Ok().body("we accepted it")
 }
