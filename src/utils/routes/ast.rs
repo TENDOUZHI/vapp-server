@@ -16,9 +16,6 @@ pub struct LoginResponse {
     pub token: Option<String>
 }
 
-pub struct ErrorMessage{
-    pub msg: String
-}
 
 #[derive(Debug)]
 pub enum LoginType {

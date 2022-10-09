@@ -1,25 +1,21 @@
-use actix_web::{
-    cookie::{time},
-    web, App, HttpServer,
-};
+use actix_web::dev::Service;
 use actix_web::middleware;
+use actix_web::{cookie::time, web, App, HttpServer};
 mod utils;
 use actix_cors::Cors;
-use actix_session::{
-    CookieSession
-    // config::PersistentSession,
-    // storage::{CookieSessionStore, RedisSessionStore, RedisActorSessionStore}, SessionMiddleware,
-};
+use actix_session::CookieSession;
 // ,features=["redis-actor-session","cookie-session","redis-rs-session"]
 // use actix_redis::RedisSession;
 // use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
 use actix_web::http::header;
 use dotenv::dotenv;
+use futures::FutureExt;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use utils::{
-    lib::{echo, hello, vapp},
-    routes::user_route::{email_pass_code, login,register},
+    lib::{echo, hello},
+    routes::user_route::{email_pass_code, login, register},
+    vapp::vapp_route::vapp,
 };
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -45,20 +41,23 @@ async fn main() -> std::io::Result<()> {
             .service(register)
             .service(echo)
             .service(email_pass_code)
-            .wrap(CookieSession::signed(&[0; 32]) 
-            .secure(false).expires_in_time(time::Duration::minutes(2)))
-            // .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
-            // .wrap(SessionMiddleware::new(CookieSessionStore::default(), secret_key.clone()))
-            // .wrap(SessionMiddleware::new(
-            //     RedisActorSessionStore::new(redis_connection_string),
-            //     secret_key.clone(),
-            // ))
-            // .wrap(
-            //     SessionMiddleware::new(
-            //         RedisActorSessionStore::new(redis_connection_string),
-            //         secret_key.clone(),
-            //     )
-            // )
+            // .wrap_fn(|req, srv| {
+            //     if req.path() != "/login" || req.path() != "/register" {
+            //         println!("yes");
+            //         // println!("payload: {:?}",req.parts_mut())
+            //         req.into_parts().1.into();
+            //     }
+            //     println!("Hi from start. You requested: {}", req.path());
+            //     srv.call(req).map(|res| {
+            //         println!("Hi from response");
+            //         res
+            //     })
+            // })
+            .wrap(
+                CookieSession::signed(&[0; 32])
+                    .secure(false)
+                    .expires_in_time(time::Duration::minutes(2)),
+            )
             .wrap(middleware::Logger::default())
             .wrap(
                 Cors::default()

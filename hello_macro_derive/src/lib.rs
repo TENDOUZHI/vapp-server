@@ -3,11 +3,8 @@ extern crate proc_macro;
 use crate::proc_macro::TokenStream;
 use quote::quote;
 use syn::{
-    self,
-    Data::Struct,
-    DataStruct, DeriveInput, Field,
-    Fields::{self, Named},
-    FieldsNamed, Path, Type, TypePath,
+    self, Data::Struct, DataStruct, DeriveInput, Field, Fields::Named, FieldsNamed, Path, Type,
+    TypePath,
 };
 
 // #[proc_macro_derive(MyMacro)]

@@ -1,11 +1,6 @@
 pub mod lib;
-pub mod parser;
-pub mod renderer;
-pub mod json_renderer;
-pub mod ast;
-pub mod parser_wxss;
-pub mod compress;
 pub mod jdbc;
 pub mod routes;
 pub mod handler;
 pub mod jwt;
+pub mod vapp;

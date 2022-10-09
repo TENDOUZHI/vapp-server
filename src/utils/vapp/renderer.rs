@@ -64,8 +64,8 @@ fn create_basic_file(file_path: &str) {
     let path_sitmap_json = format!("{}/sitmap.json", file_path);
     let path_project_config = format!("{}/project.config.json", file_path);
     // initial file instance
-    let mut app_js = File::create(pathjs).unwrap();
-    let mut app_wxss = File::create(pathwxss).unwrap();
+    let app_js = File::create(pathjs).unwrap();
+    let app_wxss = File::create(pathwxss).unwrap();
     let mut app_json = File::create(pathjson).unwrap();
     let mut project_config = File::create(path_project_config).unwrap();
     let mut sitmap_json = File::create(path_sitmap_json).unwrap();
