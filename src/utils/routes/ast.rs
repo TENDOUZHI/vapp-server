@@ -13,7 +13,11 @@ pub struct LoginPassword {
 #[derive(Deserialize,Serialize,Debug)]
 pub struct LoginResponse {
     pub message: String,
-    pub token: Option<String>
+    pub token: Option<String>,
+    pub username: Option<String>,
+    pub avatar: Option<Vec<u8>>,
+    pub email: Option<String>,
+    pub telephone: Option<String>
 }
 
 

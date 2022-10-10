@@ -1,3 +1,5 @@
+// use actix_session::storage::{RedisActorSessionStore, CookieSessionStore};
+use actix_web::cookie::{Key, SameSite};
 use actix_web::dev::Service;
 use actix_web::middleware;
 use actix_web::{cookie::time, web, App, HttpServer};
@@ -41,31 +43,16 @@ async fn main() -> std::io::Result<()> {
             .service(register)
             .service(echo)
             .service(email_pass_code)
-            // .wrap_fn(|req, srv| {
-            //     if req.path() != "/login" || req.path() != "/register" {
-            //         println!("yes");
-            //         // println!("payload: {:?}",req.parts_mut())
-            //         req.into_parts().1.into();
-            //     }
-            //     println!("Hi from start. You requested: {}", req.path());
-            //     srv.call(req).map(|res| {
-            //         println!("Hi from response");
-            //         res
-            //     })
-            // })
-            .wrap(
-                CookieSession::signed(&[0; 32])
-                    .secure(false)
-                    .expires_in_time(time::Duration::minutes(2)),
-            )
+            .wrap(CookieSession::signed(&[0; 32]).secure(true).same_site(SameSite::None))
             .wrap(middleware::Logger::default())
             .wrap(
                 Cors::default()
-                    // .allowed_origin("http://localhost:5173")
-                    .allow_any_origin()
+                    .allowed_origin("http://localhost:5173")
+                    // .allow_any_origin()
                     .allowed_methods(vec!["GET", "POST"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
                     .allowed_header(header::CONTENT_TYPE)
+                    .supports_credentials()
                     .max_age(3600),
             )
     })

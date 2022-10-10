@@ -1,5 +1,5 @@
 use actix_session::Session;
-use actix_web::{HttpResponse};
+use actix_web::HttpResponse;
 use crypto::{digest::Digest, sha1::Sha1};
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
 use sqlx::{Pool, Postgres};
@@ -49,6 +49,10 @@ pub async fn login_handler(
                         Ok(token) => Ok(LoginResponse {
                             message: "username login successfully".to_string(),
                             token: Some(token),
+                            username: Some(res[0].username.clone()),
+                            avatar: res[0].avatar.clone(),
+                            email: res[0].email.clone(),
+                            telephone: res[0].telephone.clone(),
                         }),
                         Err(_) => Err("token genarate error".to_owned()),
                     }
@@ -77,6 +81,10 @@ pub async fn login_handler(
                         Ok(token) => Ok(LoginResponse {
                             message: "telephone login successfully".to_string(),
                             token: Some(token),
+                            username: Some(res[0].username.clone()),
+                            avatar: res[0].avatar.clone(),
+                            email: res[0].email.clone(),
+                            telephone: res[0].telephone.clone(),
                         }),
                         Err(_) => Err("token genarate error".to_owned()),
                     }
@@ -105,6 +113,10 @@ pub async fn login_handler(
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
                             token: Some(token),
+                            username: Some(res[0].username.clone()),
+                            avatar: res[0].avatar.clone(),
+                            email: res[0].email.clone(),
+                            telephone: res[0].telephone.clone(),
                         }),
                         Err(_) => Err("token genarate error".to_owned()),
                     }
@@ -133,6 +145,10 @@ pub async fn login_handler(
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
                             token: Some(token),
+                            username: Some(res[0].username.clone()),
+                            avatar: res[0].avatar.clone(),
+                            email: res[0].email.clone(),
+                            telephone: res[0].telephone.clone(),
                         }),
                         Err(_) => Err("token genarate error".to_owned()),
                     }
@@ -160,12 +176,17 @@ pub async fn login_handler(
                 let code = session
                     .get::<String>(&email)
                     .expect("get verify code from redis");
+                println!("{:?},{:?}", session.entries(), info.emessage);
                 if code == info.emessage {
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
                             token: Some(token),
+                            username: Some(res[0].username.clone()),
+                            avatar: res[0].avatar.clone(),
+                            email: res[0].email.clone(),
+                            telephone: res[0].telephone.clone(),
                         }),
                         Err(_) => Err("token genarate error".to_owned()),
                     }
@@ -183,6 +204,7 @@ pub async fn register_handler(
     pool: &Pool<Postgres>,
     info: &LoginPassword,
     login_type: LoginType,
+    session: Session,
 ) -> Result<String, String> {
     match login_type {
         LoginType::Name => {
@@ -233,7 +255,7 @@ pub async fn register_handler(
                     r#"
                     insert into users(username,telephone,password) values($1,$2,$3)
                 "#,
-                    info.telephone,
+                    info.username,
                     info.telephone,
                     password
                 )
@@ -246,6 +268,7 @@ pub async fn register_handler(
             }
         }
         LoginType::Email => {
+            let email = info.email.as_ref().unwrap().clone();
             let exist = sqlx::query!(
                 r#"
                 select * from users where email=$1
@@ -255,23 +278,28 @@ pub async fn register_handler(
             .fetch_all(pool)
             .await
             .expect("this email has existed");
-            // no same username has registed
-            if exist.len() == 0 {
-                let password = password_crypto(info.password.as_ref().unwrap());
-                sqlx::query!(
-                    r#"
+            // no same email has registed
+            let code = session.get::<String>(&email).expect("msg");
+            if code == info.emessage {
+                if exist.len() == 0 {
+                    let password = password_crypto(info.password.as_ref().unwrap());
+                    sqlx::query!(
+                        r#"
                     insert into users(username,email,password) values($1,$2,$3)
                 "#,
-                    info.email,
-                    info.email,
-                    password
-                )
-                .fetch_all(pool)
-                .await
-                .expect("insert email");
-                Ok("email register successfully".to_string())
+                        info.username,
+                        info.email,
+                        password
+                    )
+                    .fetch_all(pool)
+                    .await
+                    .expect("insert email");
+                    Ok("email register successfully".to_string())
+                } else {
+                    Err("the email has been used".to_string())
+                }
             } else {
-                Err("the email has been used".to_string())
+                Err("email verify code incorrect".to_string())
             }
         }
         _ => Err("not support this register way".to_string()),
