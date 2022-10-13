@@ -5,7 +5,7 @@ use std::{
 };
 
 use super::{
-    ast::{Info, VNode, Vapp},
+    ast::{ VNode, Vapp},
     json_renderer::{write_app_json, write_project_config_json, write_sitmap_json},
     parser::parser, parser_wxss::parser_wxss,
 };
@@ -33,17 +33,6 @@ pub fn parse_vapp(vapp: Vapp) {
     }
 }
 
-pub fn initial_project(info: Info) {
-    let project_name = &info.name;
-    let dev_path = format!("mini/{}", &project_name);
-    let path = Path::new(&dev_path);
-    remove_dir_all(&path).expect("occur at remove_dir_all");
-    create_dir(&path).expect("create_root_dir");
-    let file_path = format!("{}", path.to_str().unwrap());
-    create_pages_dir(&file_path);
-    create_utils_dir(&file_path);
-    create_basic_file(&file_path);
-}
 
 fn create_pages_dir(file_path: &str) {
     let path = format!("{}/pages", file_path);
@@ -64,8 +53,10 @@ fn create_basic_file(file_path: &str) {
     let path_sitmap_json = format!("{}/sitmap.json", file_path);
     let path_project_config = format!("{}/project.config.json", file_path);
     // initial file instance
-    let app_js = File::create(pathjs).unwrap();
-    let app_wxss = File::create(pathwxss).unwrap();
+    // let app_js = File::create(pathjs).unwrap();
+    // let app_wxss = File::create(pathwxss).unwrap();
+    File::create(pathjs).unwrap();
+    File::create(pathwxss).unwrap();
     let mut app_json = File::create(pathjson).unwrap();
     let mut project_config = File::create(path_project_config).unwrap();
     let mut sitmap_json = File::create(path_sitmap_json).unwrap();
@@ -87,12 +78,14 @@ fn create_page(file_path: &str, name: &str, data: &VNode) {
 
 fn write_js(path: &str) {
     let page_path = format!("{}.js", path);
-    let js = File::create(page_path).expect("create js file");
+    // let js = File::create(page_path).expect("create js file");
+    File::create(page_path).expect("create js file");
 }
 
 fn write_json(path: &str) {
     let page_path = format!("{}.json", path);
-    let json = File::create(page_path).expect("create json file");
+    // let json = File::create(page_path).expect("create json file");
+    File::create(page_path).expect("create json file");
 }
 
 fn write_wxml(path: &str, data: &VNode) {

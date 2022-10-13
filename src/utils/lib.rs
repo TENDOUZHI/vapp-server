@@ -1,17 +1,15 @@
-
 use crate::utils::jwt::jwt::check_token;
-use actix_files::NamedFile;
 use actix_session::Session;
 use actix_web::{
     get, post,
-    web::{self, Json},
+    // web,
     Error, HttpResponse, Responder, Result,
 };
-use sqlx::PgPool;
-use std::path::Path;
+// use sqlx::PgPool;
 
 #[get("/hello")]
-pub async fn hello(pool: web::Data<PgPool>, session: Session) -> Result<HttpResponse, Error> {
+pub async fn hello() -> Result<HttpResponse, Error> {
+    // pool: web::Data<PgPool>, session: Session
     let vali = check_token("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJWYXBwX0FjdGl4Iiwic3ViIjoiTm9ybWFsIHVzZXJzIiwiYXVkIjoid3p5IiwiZXhwIjoxNjY1MjM4MzI5NjA4LCJpYXQiOjE2NjUyMzgyNjk2MDgsIm5iZiI6MTY2NTIzODI2OTYwOH0.yF0ImMA7DckG4srAatmruOEKOcc3xQZYOoK-cbhTgOc".to_string());
     println!("{vali}");
     Ok(HttpResponse::Ok().body("get"))

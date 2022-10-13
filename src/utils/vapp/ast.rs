@@ -6,27 +6,27 @@ use serde::{Deserialize, Serialize};
 pub struct Style {
     pub width: String,
     pub height: String,
-    pub fontSize: String,
+    pub font_size: String,
     pub color: String,
-    pub marginTop: String,
-    pub marginBottom: String,
-    pub marginLeft: String,
-    pub marginRight: String,
-    pub paddingTop: String,
-    pub paddingBottom: String,
-    pub paddingLeft: String,
-    pub paddingRight: String,
-    pub borderRadius: String,
-    pub borderWidth: String,
-    pub borderColor: String,
-    pub backgroundColor: String,
+    pub margin_top: String,
+    pub margin_bottom: String,
+    pub margin_left: String,
+    pub margin_right: String,
+    pub padding_top: String,
+    pub padding_bottom: String,
+    pub padding_left: String,
+    pub padding_right: String,
+    pub border_radius: String,
+    pub border_width: String,
+    pub border_color: String,
+    pub background_color: String,
     pub opacity: String,
     pub display: String,
-    pub flexDirection: String,
-    pub justifyContent: String,
-    pub justifyItems: String,
-    pub alignContent: String,
-    pub alignItems: String,
+    pub flex_direction: String,
+    pub justify_content: String,
+    pub justify_items: String,
+    pub align_content: String,
+    pub align_items: String,
 }
 
 impl Style {
@@ -47,27 +47,27 @@ impl Style {
         let mut style_vec = vec![];
         style_vec.push(("width",&self.width));
         style_vec.push(("height",&self.height));
-        style_vec.push(("font-size",&self.fontSize));
+        style_vec.push(("font-size",&self.font_size));
         style_vec.push(("color",&self.color));
-        style_vec.push(("margin-top",&self.marginTop));
-        style_vec.push(("margin-bottom",&self.marginBottom));
-        style_vec.push(("margin-left",&self.marginLeft));
-        style_vec.push(("margin-right",&self.marginRight));
-        style_vec.push(("padding-top",&self.paddingTop));
-        style_vec.push(("padding-bottom",&self.paddingBottom));
-        style_vec.push(("padding-left",&self.paddingLeft));
-        style_vec.push(("padding-right",&self.paddingRight));
-        style_vec.push(("border-radius",&self.borderRadius));
-        style_vec.push(("border-width",&self.borderWidth));
-        style_vec.push(("border-color",&self.borderColor));
-        style_vec.push(("background-color",&self.backgroundColor));
+        style_vec.push(("margin-top",&self.margin_top));
+        style_vec.push(("margin-bottom",&self.margin_bottom));
+        style_vec.push(("margin-left",&self.margin_left));
+        style_vec.push(("margin-right",&self.margin_right));
+        style_vec.push(("padding-top",&self.padding_top));
+        style_vec.push(("padding-bottom",&self.padding_bottom));
+        style_vec.push(("padding-left",&self.padding_left));
+        style_vec.push(("padding-right",&self.padding_right));
+        style_vec.push(("border-radius",&self.border_radius));
+        style_vec.push(("border-width",&self.border_width));
+        style_vec.push(("border-color",&self.border_color));
+        style_vec.push(("background-color",&self.background_color));
         style_vec.push(("opacity",&self.opacity));
         style_vec.push(("display",&self.display));
-        style_vec.push(("flex-direction",&self.flexDirection));
-        style_vec.push(("justify-content",&self.justifyContent));
-        style_vec.push(("justify-items",&self.justifyItems));
-        style_vec.push(("align-content",&self.alignContent));
-        style_vec.push(("align-items",&self.alignItems));
+        style_vec.push(("flex-direction",&self.flex_direction));
+        style_vec.push(("justify-content",&self.justify_content));
+        style_vec.push(("justify-items",&self.justify_items));
+        style_vec.push(("align-content",&self.align_content));
+        style_vec.push(("align-items",&self.align_items));
         style_vec
     }
 

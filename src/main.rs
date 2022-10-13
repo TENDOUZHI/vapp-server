@@ -1,8 +1,7 @@
 // use actix_session::storage::{RedisActorSessionStore, CookieSessionStore};
-use actix_web::cookie::{Key, SameSite};
-use actix_web::dev::Service;
+use actix_web::cookie::SameSite;
 use actix_web::middleware;
-use actix_web::{cookie::time, web, App, HttpServer};
+use actix_web::{ web, App, HttpServer};
 mod utils;
 use actix_cors::Cors;
 use actix_session::CookieSession;
@@ -11,7 +10,6 @@ use actix_session::CookieSession;
 // use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
 use actix_web::http::header;
 use dotenv::dotenv;
-use futures::FutureExt;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use utils::{
@@ -43,7 +41,11 @@ async fn main() -> std::io::Result<()> {
             .service(register)
             .service(echo)
             .service(email_pass_code)
-            .wrap(CookieSession::signed(&[0; 32]).secure(true).same_site(SameSite::None))
+            .wrap(
+                CookieSession::signed(&[0; 32])
+                    .secure(true)
+                    .same_site(SameSite::None),
+            )
             .wrap(middleware::Logger::default())
             .wrap(
                 Cors::default()
