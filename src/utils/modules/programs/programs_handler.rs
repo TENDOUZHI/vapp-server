@@ -45,23 +45,42 @@ pub async fn programs_insert_handler(
     }
 }
 
-pub async fn programs_delete_handler(pool: &Pool<Postgres>, info: &ProgramDelete) -> Result<String, String> {
-    let res = query!(
+pub async fn programs_delete_handler(
+    pool: &Pool<Postgres>,
+    info: &ProgramDelete,
+) -> Result<String, String> {
+    let ensure = query!(
         r#"
-        delete from programs where id=$1and user_id=$2
+        select * from programs where id=$1 and user_id=$2
     "#,
-    info.id,
-    info.user_id
+        info.id,
+        info.user_id
     )
     .fetch_all(pool)
     .await;
-    match res {
+    match ensure {
         Ok(v) => {
-            println!("{}",v.len());
-            Ok("delete programs successfully".to_string())
-        },
-        Err(e) => {
-            Err(format!("{e}"))
+            if v.len() == 1 {
+                let res = query!(
+                    r#"
+        delete from programs where id=$1 and user_id=$2
+    "#,
+                    info.id,
+                    info.user_id
+                )
+                .fetch_all(pool)
+                .await;
+                match res {
+                    Ok(v) => {
+                        println!("{}", v.len());
+                        Ok("delete programs successfully".to_string())
+                    }
+                    Err(e) => Err(format!("{e}")),
+                }
+            } else {
+                Err("program id or user_id invalide".to_string())
+            }
         }
+        Err(e) => Err(format!("{e}")),
     }
 }

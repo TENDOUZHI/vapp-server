@@ -34,7 +34,7 @@ pub async fn programs_insert(
     let res = programs_insert_handler(&pool, &info).await;
     match res {
         Ok(v) => HttpResponse::Ok().body(v),
-        Err(e) => HttpResponse::Ok().body(e),
+        Err(e) => HttpResponse::Forbidden().body(e),
     }
 }
 
@@ -47,7 +47,7 @@ pub async fn programs_delete(
     let res = programs_delete_handler(&pool, &info).await;
     match res {
         Ok(v) => HttpResponse::Ok().body(v),
-        Err(e) =>HttpResponse::Ok().body(e)
+        Err(e) =>HttpResponse::Forbidden().body(e)
     }
     
 }
