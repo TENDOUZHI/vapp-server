@@ -6,8 +6,8 @@ use actix_web::{
 use sqlx::PgPool;
 
 use crate::utils::modules::programs::{
-    ast::{InsertProgram, ProgramsResponse},
-    programs_handler::programs_handler,
+    ast::{ProgramInsert, ProgramsResponse},
+    programs_handler::{programs_handler, programs_insert_handler},
 };
 
 #[get("/programlist")]
@@ -26,9 +26,19 @@ pub async fn programlist(pool: web::Data<PgPool>) -> impl Responder {
 }
 
 #[post("/programlist/insert")]
-pub async fn program_insert(
+pub async fn programs_insert(
     pool: web::Data<PgPool>,
-    payload: Json<InsertProgram>,
+    payload: Json<ProgramInsert>,
 ) -> impl Responder {
-    HttpResponse::Ok().body("insert successfully")
+    let info = payload.into_inner();
+    let res = programs_insert_handler(&pool, &info).await;
+    match res {
+        Ok(v) => {
+            HttpResponse::Ok().body(v)
+        },
+        Err(e) => {
+            HttpResponse::Ok().body(e)
+        }
+    }
+   
 }

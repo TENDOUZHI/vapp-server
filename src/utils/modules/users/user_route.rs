@@ -26,6 +26,7 @@ pub async fn login(
             Err(e) => {
                 let msg = LoginResponse {
                     message: e,
+                    id: None,
                     token: None,
                     username: None,
                     avatar: None,
@@ -43,6 +44,7 @@ pub async fn login(
                 Err(e) => {
                     let msg = LoginResponse {
                         message: e,
+                        id:None,
                         token: None,
                         username: None,
                         avatar: None,
@@ -59,6 +61,7 @@ pub async fn login(
             Err(e) => {
                 let msg = LoginResponse {
                     message: e,
+                    id:None,
                     token: None,
                     username: None,
                     avatar: None,
@@ -76,6 +79,7 @@ pub async fn login(
                 Err(e) => {
                     let msg = LoginResponse {
                         message: e,
+                        id:None,
                         token: None,
                         username: None,
                         avatar: None,
@@ -92,6 +96,7 @@ pub async fn login(
             Err(e) => {
                 let msg = LoginResponse {
                     message: e,
+                    id:None,
                     token: None,
                     username: None,
                     avatar: None,
@@ -105,6 +110,7 @@ pub async fn login(
         let msg = LoginResponse {
             message: "login failed".to_string(),
             token: None,
+            id:None,
             username: None,
             avatar: None,
             email: None,

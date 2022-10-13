@@ -18,7 +18,7 @@ pub struct Programs {
 }
 
 #[derive(Debug,Serialize,Deserialize)]
-pub struct InsertProgram {
+pub struct ProgramInsert {
     pub user_id: i32,
     pub name: String,
     pub lastdate: NaiveDate

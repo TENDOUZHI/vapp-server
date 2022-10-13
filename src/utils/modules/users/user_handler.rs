@@ -47,6 +47,7 @@ pub async fn login_handler(
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "username login successfully".to_string(),
+                            id: Some(res[0].id),
                             token: Some(token),
                             username: Some(res[0].username.clone()),
                             avatar: res[0].avatar.clone(),
@@ -79,6 +80,7 @@ pub async fn login_handler(
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "telephone login successfully".to_string(),
+                            id: Some(res[0].id),
                             token: Some(token),
                             username: Some(res[0].username.clone()),
                             avatar: res[0].avatar.clone(),
@@ -111,6 +113,7 @@ pub async fn login_handler(
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
+                            id: Some(res[0].id),
                             token: Some(token),
                             username: Some(res[0].username.clone()),
                             avatar: res[0].avatar.clone(),
@@ -143,6 +146,7 @@ pub async fn login_handler(
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
+                            id: Some(res[0].id),
                             token: Some(token),
                             username: Some(res[0].username.clone()),
                             avatar: res[0].avatar.clone(),
@@ -181,6 +185,7 @@ pub async fn login_handler(
                     match token {
                         Ok(token) => Ok(LoginResponse {
                             message: "email login successfully".to_string(),
+                            id: Some(res[0].id),
                             token: Some(token),
                             username: Some(res[0].username.clone()),
                             avatar: res[0].avatar.clone(),

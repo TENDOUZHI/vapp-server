@@ -11,7 +11,7 @@ use actix_session::CookieSession;
 use actix_web::http::header;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
-use utils::modules::programs::programs_route::{programlist, program_insert};
+use utils::modules::programs::programs_route::{programlist, programs_insert};
 use std::env;
 use utils::{
     lib::{echo, hello},
@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
             .service(echo)
             .service(email_pass_code)
             .service(programlist)
-            .service(program_insert)
+            .service(programs_insert)
             .wrap(
                 CookieSession::signed(&[0; 32])
                     .secure(true)
