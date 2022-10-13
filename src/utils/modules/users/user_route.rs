@@ -7,11 +7,10 @@ use actix_web::{
 };
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use sqlx::PgPool;
+use crate::utils::modules::users::{user_handler::{login_handler, register_handler, register_response, email_send}, ast::VerifyCode};
 
-use crate::utils::{
-    handler::user_handler::{email_send, login_handler, register_handler, register_response},
-    routes::ast::{CodeType, LoginPassword, LoginResponse, LoginType, VerifyCode},
-};
+use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType};
+
 
 #[post("/login")]
 pub async fn login(

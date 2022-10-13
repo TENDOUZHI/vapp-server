@@ -14,7 +14,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::env;
 use utils::{
     lib::{echo, hello},
-    routes::user_route::{email_pass_code, login, register},
+    modules::users::user_route::{email_pass_code, login, register},
     vapp::vapp_route::vapp,
 };
 #[actix_web::main]

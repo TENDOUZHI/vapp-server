@@ -5,10 +5,9 @@ use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTranspor
 use sqlx::{Pool, Postgres};
 use std::io::{Error, ErrorKind};
 
-use crate::utils::{
-    jwt::jwt::genarate_token,
-    routes::ast::{CodeType, LoginPassword, LoginResponse, LoginType},
-};
+use crate::utils::jwt::jwt::genarate_token;
+
+use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType};
 
 // pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
 //     return match res {
