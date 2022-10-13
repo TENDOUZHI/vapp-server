@@ -23,3 +23,9 @@ pub struct ProgramInsert {
     pub name: String,
     pub lastdate: NaiveDate
 }
+
+#[derive(Debug,Serialize,Deserialize)]
+pub struct ProgramDelete {
+    pub id: i32,
+    pub user_id:i32
+}

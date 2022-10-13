@@ -1,6 +1,6 @@
 use sqlx::{query, Pool, Postgres};
 
-use super::ast::{ProgramInsert, Programs, ProgramsResponse};
+use super::ast::{ProgramDelete, ProgramInsert, Programs, ProgramsResponse};
 
 pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse, String> {
     let res = query!("select * from programs").fetch_all(pool).await;
@@ -25,7 +25,10 @@ pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse,
     }
 }
 
-pub async fn programs_insert_handler(pool: &Pool<Postgres>, info: &ProgramInsert) -> Result<String,String> {
+pub async fn programs_insert_handler(
+    pool: &Pool<Postgres>,
+    info: &ProgramInsert,
+) -> Result<String, String> {
     let res = query!(
         r#"
         insert into programs(user_id,name,lastdate) values($1,$2,$3)
@@ -37,9 +40,28 @@ pub async fn programs_insert_handler(pool: &Pool<Postgres>, info: &ProgramInsert
     .fetch_all(pool)
     .await;
     match res {
-        Ok(_) => {
-            Ok("insert programs successfully".to_string())
-        },
+        Ok(_) => Ok("insert programs successfully".to_string()),
         Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn programs_delete_handler(pool: &Pool<Postgres>, info: &ProgramDelete) -> Result<String, String> {
+    let res = query!(
+        r#"
+        delete from programs where id=$1and user_id=$2
+    "#,
+    info.id,
+    info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    match res {
+        Ok(v) => {
+            println!("{}",v.len());
+            Ok("delete programs successfully".to_string())
+        },
+        Err(e) => {
+            Err(format!("{e}"))
+        }
     }
 }
