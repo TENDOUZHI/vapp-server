@@ -1,9 +1,13 @@
 use sqlx::{query, Pool, Postgres};
 
-use super::ast::{ProgramDelete, ProgramInsert, Programs, ProgramsResponse};
+use super::ast::{
+    ProgramDelete, ProgramInsert, Programs, ProgramsData, ProgramsDataResponse, ProgramsResponse,
+};
 
 pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse, String> {
-    let res = query!("select * from programs").fetch_all(pool).await;
+    let res = query!("select id, user_id, name, lastdate from programs")
+        .fetch_all(pool)
+        .await;
     match res {
         Ok(v) => {
             let mut list: Vec<Programs> = vec![];
@@ -11,7 +15,6 @@ pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse,
                 list.push(Programs {
                     id: i.id,
                     user_id: i.user_id,
-                    data: i.data,
                     name: i.name,
                     lastdate: i.lastdate,
                 })
@@ -21,6 +24,22 @@ pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse,
                 list: Some(list),
             })
         }
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn programs_data_handler(
+    pool: &Pool<Postgres>,
+    info: &ProgramsData,
+) -> Result<ProgramsDataResponse, String> {
+    let res = query!(r#"select data from programs where id=$1"#, info.id)
+        .fetch_one(pool)
+        .await;
+    match res {
+        Ok(v) => Ok(ProgramsDataResponse {
+            msg: "select program data successfully".to_string(),
+            data: v.data,
+        }),
         Err(e) => Err(format!("{e}")),
     }
 }

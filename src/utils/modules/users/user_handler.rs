@@ -319,8 +319,13 @@ pub fn email_send(email_address: &str, verify_code: &str, code_type: CodeType) {
     let reciver = format!("Reciver <{}>", email_address);
     let title = format!("{types} code: {}", verify_code);
     let content = format!(
-        "<h2>Here is your {} approval code: {}</h2>",
+        "<h3>Here is your {} approval code: {}</h3>
+        <div style='width=100%;
+        height=300px;
+        background=pink;'>{}</div>
+        ",
         types.to_lowercase(),
+        verify_code,
         verify_code
     );
     let m = Message::builder()

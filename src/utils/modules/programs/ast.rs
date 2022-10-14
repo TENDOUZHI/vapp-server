@@ -12,9 +12,20 @@ pub struct ProgramsResponse {
 pub struct Programs {
     pub id: i32,
     pub user_id: i32,
-    pub data: Option<String>,
+    // pub data: Option<String>,
     pub name: Option<String>,
     pub lastdate: Option<NaiveDate>
+}
+
+#[derive(Debug,Serialize,Deserialize)]
+pub struct ProgramsDataResponse {
+    pub msg: String,
+    pub data: Option<String>,
+}
+
+#[derive(Debug,Serialize,Deserialize)]
+pub struct ProgramsData {
+    pub id: i32,
 }
 
 #[derive(Debug,Serialize,Deserialize)]
