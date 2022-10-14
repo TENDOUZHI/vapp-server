@@ -1,8 +1,5 @@
 use chrono::NaiveDate;
 use serde::{Serialize, Deserialize};
-use sqlx::types::Json;
-
-use crate::utils::vapp::ast::Vapp;
 
 
 #[derive(Debug,Serialize,Deserialize)]
