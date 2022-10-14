@@ -44,5 +44,7 @@ pub struct ProgramDelete {
 pub struct ProgramSave{
     pub id: i32,
     pub user_id: i32,
-    pub data: String
+    pub data: String,
+    pub program_name: String,
+    pub lastdate: NaiveDate
 }
