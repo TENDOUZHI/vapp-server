@@ -1,3 +1,7 @@
+use crate::utils::modules::users::{
+    ast::{LoginVerify, VerifyCode},
+    user_handler::{email_send, login_handler, register_handler, register_response, login_verify_handler},
+};
 use actix_session::Session;
 use actix_web::{
     http::StatusCode,
@@ -7,10 +11,8 @@ use actix_web::{
 };
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use sqlx::PgPool;
-use crate::utils::modules::users::{user_handler::{login_handler, register_handler, register_response, email_send}, ast::VerifyCode};
 
 use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType};
-
 
 #[post("/login")]
 pub async fn login(
@@ -44,7 +46,7 @@ pub async fn login(
                 Err(e) => {
                     let msg = LoginResponse {
                         message: e,
-                        id:None,
+                        id: None,
                         token: None,
                         username: None,
                         avatar: None,
@@ -61,7 +63,7 @@ pub async fn login(
             Err(e) => {
                 let msg = LoginResponse {
                     message: e,
-                    id:None,
+                    id: None,
                     token: None,
                     username: None,
                     avatar: None,
@@ -79,7 +81,7 @@ pub async fn login(
                 Err(e) => {
                     let msg = LoginResponse {
                         message: e,
-                        id:None,
+                        id: None,
                         token: None,
                         username: None,
                         avatar: None,
@@ -96,7 +98,7 @@ pub async fn login(
             Err(e) => {
                 let msg = LoginResponse {
                     message: e,
-                    id:None,
+                    id: None,
                     token: None,
                     username: None,
                     avatar: None,
@@ -110,13 +112,36 @@ pub async fn login(
         let msg = LoginResponse {
             message: "login failed".to_string(),
             token: None,
-            id:None,
+            id: None,
             username: None,
             avatar: None,
             email: None,
             telephone: None,
         };
         web::Json(msg)
+    }
+}
+
+#[post("/login/verify")]
+pub async fn verify(pool: web::Data<PgPool>, payload: Json<LoginVerify>) -> impl Responder {
+    let info = payload.into_inner();
+    let res = login_verify_handler(&pool, &info).await;
+    match res {
+        Ok(v)=>{
+            web::Json(v)
+        },
+        Err(e)=>{
+            let msg = LoginResponse {
+                message: e,
+                id: None,
+                token: None,
+                username: None,
+                avatar: None,
+                email: None,
+                telephone: None,
+            };
+            web::Json(msg)
+        }
     }
 }
 

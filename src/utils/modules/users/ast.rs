@@ -20,6 +20,12 @@ pub struct LoginResponse {
     pub email: Option<String>,
     pub telephone: Option<String>
 }
+#[derive(Deserialize,Debug)]
+pub struct LoginVerify {
+    pub id: i32,
+    pub username: String,
+    pub token: String
+}
 
 
 #[derive(Debug)]

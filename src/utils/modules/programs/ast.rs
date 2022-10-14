@@ -1,5 +1,8 @@
 use chrono::NaiveDate;
 use serde::{Serialize, Deserialize};
+use sqlx::types::Json;
+
+use crate::utils::vapp::ast::Vapp;
 
 
 #[derive(Debug,Serialize,Deserialize)]
@@ -35,8 +38,14 @@ pub struct ProgramInsert {
     pub lastdate: NaiveDate
 }
 
-#[derive(Debug,Serialize,Deserialize)]
+#[derive(Debug,Deserialize)]
 pub struct ProgramDelete {
     pub id: i32,
     pub user_id:i32
+}
+#[derive(Debug,Deserialize,sqlx::FromRow)]
+pub struct ProgramSave{
+    pub id: i32,
+    pub user_id: i32,
+    pub data: String
 }

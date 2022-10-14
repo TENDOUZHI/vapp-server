@@ -1,7 +1,8 @@
 use sqlx::{query, Pool, Postgres};
 
 use super::ast::{
-    ProgramDelete, ProgramInsert, Programs, ProgramsData, ProgramsDataResponse, ProgramsResponse,
+    ProgramDelete, ProgramInsert, ProgramSave, Programs, ProgramsData, ProgramsDataResponse,
+    ProgramsResponse,
 };
 
 pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse, String> {
@@ -70,7 +71,7 @@ pub async fn programs_delete_handler(
 ) -> Result<String, String> {
     let ensure = query!(
         r#"
-        select * from programs where id=$1 and user_id=$2
+        select id from programs where id=$1 and user_id=$2
     "#,
         info.id,
         info.user_id
@@ -90,8 +91,8 @@ pub async fn programs_delete_handler(
                 .fetch_all(pool)
                 .await;
                 match res {
-                    Ok(v) => {
-                        println!("{}", v.len());
+                    Ok(_) => {
+                        // println!("{}", v.len());
                         Ok("delete programs successfully".to_string())
                     }
                     Err(e) => Err(format!("{e}")),
@@ -101,5 +102,27 @@ pub async fn programs_delete_handler(
             }
         }
         Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn programs_save_handler(pool: &Pool<Postgres>, info: &ProgramSave) -> Result<String,String> {
+    let res = query!(
+        r#"
+        update programs set data=$1 where id=$2 and user_id=$3
+    "#,
+    &info.data,
+    info.id,
+    info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    // println!("{}",&info.data);
+    match res {
+        Ok(_) => {
+            Ok("update value successfully".to_string())
+        },
+        Err(e) => {
+            Err(format!("{e}"))
+        }
     }
 }

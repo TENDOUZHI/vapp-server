@@ -2,12 +2,12 @@ use actix_session::Session;
 use actix_web::HttpResponse;
 use crypto::{digest::Digest, sha1::Sha1};
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
-use sqlx::{Pool, Postgres};
+use sqlx::{query, Pool, Postgres};
 use std::io::{Error, ErrorKind};
 
-use crate::utils::jwt::jwt::genarate_token;
+use crate::utils::jwt::jwt::{check_token, genarate_token};
 
-use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType};
+use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType, LoginVerify};
 
 // pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
 //     return match res {
@@ -201,6 +201,38 @@ pub async fn login_handler(
                 Err("email incorrect".to_string())
             }
         }
+    }
+}
+
+pub async fn login_verify_handler(
+    pool: &Pool<Postgres>,
+    info: &LoginVerify,
+) -> Result<LoginResponse, String> {
+    let validate = check_token(info.token.clone());
+    if validate {
+        let res = query!("select * from users where id=$1", info.id)
+            .fetch_all(pool)
+            .await;
+        match res {
+            Ok(row) => {
+                let token = genarate_token(info.username.clone());
+                match token {
+                    Ok(v) => Ok(LoginResponse {
+                        message: "token validate".to_string(),
+                        id: Some(row[0].id),
+                        token: Some(v),
+                        username: Some(row[0].username.clone()),
+                        avatar: row[0].avatar.clone(),
+                        email: row[0].email.clone(),
+                        telephone: row[0].telephone.clone(),
+                    }),
+                    Err(e)=>Err(format!("{e}"))
+                }
+            }
+            Err(e) => Err(format!("{e}")),
+        }
+    } else {
+        Err("invalide token".to_string())
     }
 }
 

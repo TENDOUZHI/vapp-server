@@ -18,7 +18,7 @@ actix-session={version="0.5.0"}
 # ,features=["redis-actor-session","cookie-session","redis-rs-session"]
 rand = "0.8.5"
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1"
+serde_json = { version = "1.0", features = ["raw_value"] }
 futures = "0.3"
 postgres = "0.19.4"
 tokio-postgres = "0.7.7"
