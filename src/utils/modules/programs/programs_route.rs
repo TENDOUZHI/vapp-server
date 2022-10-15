@@ -1,8 +1,10 @@
 use actix_web::{
     get, post,
     web::{self, Json},
-    HttpResponse, Responder,
+    Error, HttpRequest, HttpResponse, Responder,
 };
+use actix_web_actors::ws;
+use chrono::NaiveDate;
 use sqlx::PgPool;
 
 use crate::utils::modules::programs::{
@@ -11,7 +13,8 @@ use crate::utils::modules::programs::{
         ProgramsResponse,
     },
     programs_handler::{
-        programs_data_handler, programs_delete_handler, programs_handler, programs_insert_handler, programs_save_handler,
+        programs_data_handler, programs_delete_handler, programs_handler, programs_insert_handler,
+        programs_save_handler,
     },
 };
 
@@ -77,4 +80,19 @@ pub async fn programs_save(pool: web::Data<PgPool>, payload: Json<ProgramSave>) 
         Ok(v) => HttpResponse::Ok().body(v),
         Err(e) => HttpResponse::Forbidden().body(e),
     }
+}
+
+#[get("/program/ws")]
+pub async fn program_websocket(
+    req: HttpRequest,
+    stream: web::Payload,
+) -> Result<HttpResponse, Error> {
+    let program_save = ProgramSave {
+        id: 0,
+        user_id: 0,
+        program_name: "".to_string(),
+        data: "".to_string(),
+        lastdate: NaiveDate::from_ymd(2022, 1, 1),
+    };
+    ws::start(program_save, &req, stream)
 }

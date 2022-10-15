@@ -15,4 +15,4 @@ Rust + Actix_web + postgreSQL
 
 ## 运行项目
 [rust🦀官网下载教程](https://www.rust-lang.org/zh-CN/tools/install)
-把整套工具链*特别是cargo*下载完后在该项目的终端运行**cargo run**即可启动项目，当然我暂时还没把sql文件放上,可能运行不起来完全体
+把整套工具链*特别是cargo*下载完后在该项目的终端运行**cargo run**即可启动项目

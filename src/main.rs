@@ -11,7 +11,7 @@ use actix_session::CookieSession;
 use actix_web::http::header;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
-use utils::modules::programs::programs_route::{programlist, programs_insert, programs_delete, programdata, programs_save};
+use utils::modules::programs::programs_route::{programlist, programs_insert, programs_delete, programdata, programs_save, program_websocket};
 use utils::modules::users::user_route::verify;
 use std::env;
 use utils::{
@@ -49,6 +49,7 @@ async fn main() -> std::io::Result<()> {
             .service(programs_insert)
             .service(programs_delete)
             .service(programs_save)
+            .service(program_websocket)
             .wrap(
                 CookieSession::signed(&[0; 32])
                     .secure(true)

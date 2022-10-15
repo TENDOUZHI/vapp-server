@@ -105,26 +105,25 @@ pub async fn programs_delete_handler(
     }
 }
 
-pub async fn programs_save_handler(pool: &Pool<Postgres>, info: &ProgramSave) -> Result<String,String> {
+pub async fn programs_save_handler(
+    pool: &Pool<Postgres>,
+    info: &ProgramSave,
+) -> Result<String, String> {
     let res = query!(
         r#"
         update programs set data=$1,name=$2,lastdate=$3 where id=$4 and user_id=$5
     "#,
-    &info.data,
-    info.program_name,
-    info.lastdate,
-    info.id,
-    info.user_id
+        &info.data,
+        info.program_name,
+        info.lastdate,
+        info.id,
+        info.user_id
     )
     .fetch_all(pool)
     .await;
     // println!("{}",&info.data);
     match res {
-        Ok(_) => {
-            Ok("update value successfully".to_string())
-        },
-        Err(e) => {
-            Err(format!("{e}"))
-        }
+        Ok(_) => Ok("update value successfully".to_string()),
+        Err(e) => Err(format!("{e}")),
     }
 }

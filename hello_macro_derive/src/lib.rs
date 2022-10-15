@@ -3,8 +3,7 @@ extern crate proc_macro;
 use crate::proc_macro::TokenStream;
 use quote::quote;
 use syn::{
-    self, Data::Struct, DataStruct, DeriveInput, Field, Fields::Named, FieldsNamed, Path, Type,
-    TypePath,
+    self, Data::Struct, DataStruct, DeriveInput, Field, Fields::Named, FieldsNamed
 };
 
 // #[proc_macro_derive(MyMacro)]
@@ -107,13 +106,13 @@ use syn::{
 
 #[derive(Debug)]
 struct Entity {
-    name: String,
+    // name: String,
     fields: Vec<EntityField>,
 }
 #[derive(Debug)]
 struct EntityField {
     name: String,
-    ty: String,
+    // ty: String,
 }
 
 fn get_entity_field(field: &Field) -> Option<EntityField> {
@@ -123,18 +122,18 @@ fn get_entity_field(field: &Field) -> Option<EntityField> {
             return None;
         }
     };
-    let ty_ident = match &field.ty {
-        Type::Path(TypePath {
-            path: Path { segments, .. },
-            ..
-        }) => segments.first().and_then(|s| Some(format!("{}", s.ident))),
-        _ => {
-            return None;
-        }
-    };
+    // let ty_ident = match &field.ty {
+    //     Type::Path(TypePath {
+    //         path: Path { segments, .. },
+    //         ..
+    //     }) => segments.first().and_then(|s| Some(format!("{}", s.ident))),
+    //     _ => {
+    //         return None;
+    //     }
+    // };
     let entity_field = EntityField {
         name: ident.unwrap(),
-        ty: ty_ident.unwrap(),
+        // ty: ty_ident.unwrap(),
     };
     Some(entity_field)
 }
@@ -152,7 +151,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
         panic!("This is not supported.")
     };
     let entity = Entity {
-        name: format!("{}", ident),
+        // name: format!("{}", ident),
         fields: field.iter().filter_map(|f| get_entity_field(f)).collect(),
     };
     let fields: Vec<String> = entity.fields.iter().map(|f| f.name.to_string()).collect();
