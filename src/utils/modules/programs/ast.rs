@@ -123,7 +123,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for ProgramSave {
                     program_name: self.program_name.clone(),
                     lastdate: self.lastdate.clone(),
                 };
-                println!("{}",self.data);
                 let res = async move {
                     let connect_str = env::var("DATABASE_URL").expect("geting database env url");
                     let pool = PgPoolOptions::new()

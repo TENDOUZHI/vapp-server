@@ -46,6 +46,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.username.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
+                            status:200,
                             message: "username login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -79,6 +80,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.telephone.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
+                            status:200,
                             message: "telephone login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -112,6 +114,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
+                            status:200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -145,6 +148,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
+                            status:200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -174,16 +178,16 @@ pub async fn login_handler(
             .fetch_all(pool)
             .await
             .expect("email login");
-            if res.len() != 0 {
+            if res.len() == 1 {
                 // verify the code is correct
                 let code = session
                     .get::<String>(&email)
                     .expect("get verify code from redis");
-                println!("{:?},{:?}", session.entries(), info.emessage);
                 if code == info.emessage {
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
+                            status:200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -218,6 +222,7 @@ pub async fn login_verify_handler(
                 let token = genarate_token(info.username.clone());
                 match token {
                     Ok(v) => Ok(LoginResponse {
+                        status:200,
                         message: "token validate".to_string(),
                         id: Some(row[0].id),
                         token: Some(v),
@@ -369,7 +374,7 @@ pub fn email_send(email_address: &str, verify_code: &str, code_type: CodeType) {
         .unwrap();
     let creds = Credentials::new(
         "2649821154@qq.com".to_string(),
-        "vmaudkfypicvdiif".to_string(),
+        "atgkszdqiffxecih".to_string(),
     );
     let mailer = SmtpTransport::relay("smtp.qq.com")
         .unwrap()

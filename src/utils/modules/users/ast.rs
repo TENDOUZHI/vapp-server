@@ -12,6 +12,7 @@ pub struct LoginPassword {
 
 #[derive(Deserialize,Serialize,Debug)]
 pub struct LoginResponse {
+    pub status: u16,
     pub message: String,
     pub id: Option<i32>,
     pub token: Option<String>,

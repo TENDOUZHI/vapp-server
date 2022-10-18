@@ -27,6 +27,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
+                    status:500,
                     message: e,
                     id: None,
                     token: None,
@@ -45,6 +46,7 @@ pub async fn login(
                 Ok(v) => return web::Json(v),
                 Err(e) => {
                     let msg = LoginResponse {
+                        status:500,
                         message: e,
                         id: None,
                         token: None,
@@ -62,6 +64,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
+                    status:500,
                     message: e,
                     id: None,
                     token: None,
@@ -80,6 +83,7 @@ pub async fn login(
                 Ok(v) => return web::Json(v),
                 Err(e) => {
                     let msg = LoginResponse {
+                        status:500,
                         message: e,
                         id: None,
                         token: None,
@@ -97,6 +101,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
+                    status:500,
                     message: e,
                     id: None,
                     token: None,
@@ -110,6 +115,7 @@ pub async fn login(
         }
     } else {
         let msg = LoginResponse {
+            status:500,
             message: "login failed".to_string(),
             token: None,
             id: None,
@@ -132,6 +138,7 @@ pub async fn verify(pool: web::Data<PgPool>, payload: Json<LoginVerify>) -> impl
         },
         Err(e)=>{
             let msg = LoginResponse {
+                status:500,
                 message: e,
                 id: None,
                 token: None,
