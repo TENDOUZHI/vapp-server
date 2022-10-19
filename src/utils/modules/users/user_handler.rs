@@ -356,9 +356,8 @@ pub async fn update_username_handler(
 ) -> Result<String, String> {
     let res = query!(
         "
-    update users set username=$1 where id=$2
+        select * from users where id=$1
     ",
-        info.username,
         info.user_id
     )
     .fetch_all(pool)
@@ -366,7 +365,19 @@ pub async fn update_username_handler(
     match res {
         Ok(row) => {
             if row.len() == 1 {
-                Ok("update username successfully".to_string())
+                let update_res = query!(
+                    "
+    update users set username=$1 where id=$2
+    ",
+                    info.username,
+                    info.user_id
+                )
+                .fetch_all(pool)
+                .await;
+                match update_res {
+                    Ok(_) => Ok("update username successfully".to_string()),
+                    Err(e) => Err(format!("{e}")),
+                }
             } else {
                 Err("user id is invalidate".to_string())
             }
@@ -434,23 +445,26 @@ pub async fn update_tel_handler(pool: &Pool<Postgres>, info: &UpdateTel) -> Resu
             if v.len() == 1 {
                 let passowrd = password_crypto(&info.password);
                 if passowrd == v[0].password {
-                    let update_res = query!("
+                    let update_res = query!(
+                        "
                     update users set telephone=$1 where id=$2
                     ",
-                    info.telphone,
-                    info.user_id
-                ).fetch_all(pool).await;
-                match update_res {
-                    Ok(_) => Ok("update telephone successfully".to_string()),
-                    Err(e) => Err(format!("{e}"))
-                }
+                        info.telephone,
+                        info.user_id
+                    )
+                    .fetch_all(pool)
+                    .await;
+                    match update_res {
+                        Ok(_) => Ok("update telephone successfully".to_string()),
+                        Err(e) => Err(format!("{e}")),
+                    }
                 } else {
                     Err("password is incorrect".to_string())
                 }
             } else {
                 Err("user id is invalidate".to_string())
             }
-        },
+        }
         Err(e) => Err(format!("{e}")),
     }
 }

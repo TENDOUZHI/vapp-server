@@ -67,6 +67,6 @@ pub struct UpdateMail {
 #[derive(Deserialize,Debug)]
 pub struct UpdateTel {
     pub user_id: i32,
-    pub telphone: String,
+    pub telephone: String,
     pub password: String
 }

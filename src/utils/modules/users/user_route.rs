@@ -177,7 +177,7 @@ pub async fn register(
     }
 }
 
-#[post("update/username")]
+#[post("/update/username")]
 pub async fn update_username(
     pool: web::Data<PgPool>,
     payload: Json<UpdateUserName>,
@@ -190,7 +190,7 @@ pub async fn update_username(
     }
 }
 
-#[post("update/mail")]
+#[post("/update/mail")]
 pub async fn update_mail(
     pool: web::Data<PgPool>,
     payload: Json<UpdateMail>,
@@ -204,7 +204,7 @@ pub async fn update_mail(
     }
 }
 
-#[post("update/tel")]
+#[post("/update/tel")]
 pub async fn update_tel(pool: web::Data<PgPool>, payload: Json<UpdateTel>) -> impl Responder {
     let info = payload.into_inner();
     let res = update_tel_handler(&pool, &info).await;
