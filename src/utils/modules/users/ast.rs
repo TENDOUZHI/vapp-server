@@ -49,3 +49,24 @@ pub enum CodeType {
     Login,
     Register
 }
+
+#[derive(Deserialize,Debug)]
+pub struct UpdateUserName {
+    pub user_id: i32,
+    pub username: String
+}
+
+#[derive(Deserialize,Debug)]
+pub struct UpdateMail {
+    pub user_id: i32,
+    pub mail: String,
+    pub passcode: String,
+    pub password: String
+}
+
+#[derive(Deserialize,Debug)]
+pub struct UpdateTel {
+    pub user_id: i32,
+    pub telphone: String,
+    pub password: String
+}

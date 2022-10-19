@@ -7,7 +7,10 @@ use std::io::{Error, ErrorKind};
 
 use crate::utils::jwt::jwt::{check_token, genarate_token};
 
-use super::ast::{CodeType, LoginPassword, LoginResponse, LoginType, LoginVerify};
+use super::ast::{
+    CodeType, LoginPassword, LoginResponse, LoginType, LoginVerify, UpdateMail, UpdateTel,
+    UpdateUserName,
+};
 
 // pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
 //     return match res {
@@ -46,7 +49,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.username.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
-                            status:200,
+                            status: 200,
                             message: "username login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -80,7 +83,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.telephone.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
-                            status:200,
+                            status: 200,
                             message: "telephone login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -114,7 +117,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
-                            status:200,
+                            status: 200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -148,7 +151,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
-                            status:200,
+                            status: 200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -187,7 +190,7 @@ pub async fn login_handler(
                     let token = genarate_token(info.email.as_ref().unwrap().to_string());
                     match token {
                         Ok(token) => Ok(LoginResponse {
-                            status:200,
+                            status: 200,
                             message: "email login successfully".to_string(),
                             id: Some(res[0].id),
                             token: Some(token),
@@ -222,7 +225,7 @@ pub async fn login_verify_handler(
                 let token = genarate_token(info.username.clone());
                 match token {
                     Ok(v) => Ok(LoginResponse {
-                        status:200,
+                        status: 200,
                         message: "token validate".to_string(),
                         id: Some(row[0].id),
                         token: Some(v),
@@ -231,7 +234,7 @@ pub async fn login_verify_handler(
                         email: row[0].email.clone(),
                         telephone: row[0].telephone.clone(),
                     }),
-                    Err(e)=>Err(format!("{e}"))
+                    Err(e) => Err(format!("{e}")),
                 }
             }
             Err(e) => Err(format!("{e}")),
@@ -344,6 +347,111 @@ pub async fn register_handler(
             }
         }
         _ => Err("not support this register way".to_string()),
+    }
+}
+
+pub async fn update_username_handler(
+    pool: &Pool<Postgres>,
+    info: &UpdateUserName,
+) -> Result<String, String> {
+    let res = query!(
+        "
+    update users set username=$1 where id=$2
+    ",
+        info.username,
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    match res {
+        Ok(row) => {
+            if row.len() == 1 {
+                Ok("update username successfully".to_string())
+            } else {
+                Err("user id is invalidate".to_string())
+            }
+        }
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn update_mail_handler(
+    pool: &Pool<Postgres>,
+    info: &UpdateMail,
+    session: Session,
+) -> Result<String, String> {
+    let res = query!(
+        "
+        select * from users where id=$1
+    ",
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    match res {
+        Ok(v) => {
+            if v.len() == 1 {
+                let passowrd = password_crypto(&info.password);
+                let code = session
+                    .get::<String>(&info.mail)
+                    .expect("get verify code from redis");
+                if code.unwrap() == info.passcode && passowrd == v[0].password {
+                    let update_res = query!(
+                        "
+                        update users set email=$1 where id=$2
+                        ",
+                        info.mail,
+                        info.user_id
+                    )
+                    .fetch_all(pool)
+                    .await;
+                    match update_res {
+                        Ok(_) => Ok("update mail successfully".to_string()),
+                        Err(e) => Err(format!("{e}")),
+                    }
+                } else {
+                    Err("passcode or password incorrect".to_string())
+                }
+            } else {
+                Err("user_id is invalidate".to_string())
+            }
+        }
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn update_tel_handler(pool: &Pool<Postgres>, info: &UpdateTel) -> Result<String, String> {
+    let res = query!(
+        "
+        select * from users where id=$1
+    ",
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    match res {
+        Ok(v) => {
+            if v.len() == 1 {
+                let passowrd = password_crypto(&info.password);
+                if passowrd == v[0].password {
+                    let update_res = query!("
+                    update users set telephone=$1 where id=$2
+                    ",
+                    info.telphone,
+                    info.user_id
+                ).fetch_all(pool).await;
+                match update_res {
+                    Ok(_) => Ok("update telephone successfully".to_string()),
+                    Err(e) => Err(format!("{e}"))
+                }
+                } else {
+                    Err("password is incorrect".to_string())
+                }
+            } else {
+                Err("user id is invalidate".to_string())
+            }
+        },
+        Err(e) => Err(format!("{e}")),
     }
 }
 

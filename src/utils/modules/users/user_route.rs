@@ -1,6 +1,9 @@
 use crate::utils::modules::users::{
-    ast::{LoginVerify, VerifyCode},
-    user_handler::{email_send, login_handler, register_handler, register_response, login_verify_handler},
+    ast::{LoginVerify, UpdateMail, UpdateTel, UpdateUserName, VerifyCode},
+    user_handler::{
+        email_send, login_handler, login_verify_handler, register_handler, register_response,
+        update_mail_handler, update_username_handler, update_tel_handler,
+    },
 };
 use actix_session::Session;
 use actix_web::{
@@ -27,7 +30,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
-                    status:500,
+                    status: 500,
                     message: e,
                     id: None,
                     token: None,
@@ -46,7 +49,7 @@ pub async fn login(
                 Ok(v) => return web::Json(v),
                 Err(e) => {
                     let msg = LoginResponse {
-                        status:500,
+                        status: 500,
                         message: e,
                         id: None,
                         token: None,
@@ -64,7 +67,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
-                    status:500,
+                    status: 500,
                     message: e,
                     id: None,
                     token: None,
@@ -83,7 +86,7 @@ pub async fn login(
                 Ok(v) => return web::Json(v),
                 Err(e) => {
                     let msg = LoginResponse {
-                        status:500,
+                        status: 500,
                         message: e,
                         id: None,
                         token: None,
@@ -101,7 +104,7 @@ pub async fn login(
             Ok(v) => web::Json(v),
             Err(e) => {
                 let msg = LoginResponse {
-                    status:500,
+                    status: 500,
                     message: e,
                     id: None,
                     token: None,
@@ -115,7 +118,7 @@ pub async fn login(
         }
     } else {
         let msg = LoginResponse {
-            status:500,
+            status: 500,
             message: "login failed".to_string(),
             token: None,
             id: None,
@@ -133,12 +136,10 @@ pub async fn verify(pool: web::Data<PgPool>, payload: Json<LoginVerify>) -> impl
     let info = payload.into_inner();
     let res = login_verify_handler(&pool, &info).await;
     match res {
-        Ok(v)=>{
-            web::Json(v)
-        },
-        Err(e)=>{
+        Ok(v) => web::Json(v),
+        Err(e) => {
             let msg = LoginResponse {
-                status:500,
+                status: 500,
                 message: e,
                 id: None,
                 token: None,
@@ -173,6 +174,43 @@ pub async fn register(
         HttpResponse::Ok()
             .status(StatusCode::FORBIDDEN)
             .body("register failed")
+    }
+}
+
+#[post("update/username")]
+pub async fn update_username(
+    pool: web::Data<PgPool>,
+    payload: Json<UpdateUserName>,
+) -> impl Responder {
+    let info = payload.into_inner();
+    let res = update_username_handler(&pool, &info).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e),
+    }
+}
+
+#[post("update/mail")]
+pub async fn update_mail(
+    pool: web::Data<PgPool>,
+    payload: Json<UpdateMail>,
+    session: Session,
+) -> impl Responder {
+    let info = payload.into_inner();
+    let res = update_mail_handler(&pool, &info, session).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e),
+    }
+}
+
+#[post("update/tel")]
+pub async fn update_tel(pool: web::Data<PgPool>, payload: Json<UpdateTel>) -> impl Responder {
+    let info = payload.into_inner();
+    let res = update_tel_handler(&pool, &info).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e),
     }
 }
 
