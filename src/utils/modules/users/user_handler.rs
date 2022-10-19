@@ -9,7 +9,7 @@ use crate::utils::jwt::jwt::{check_token, genarate_token};
 
 use super::ast::{
     CodeType, LoginPassword, LoginResponse, LoginType, LoginVerify, UpdateMail, UpdateTel,
-    UpdateUserName,
+    UpdateUserName, DisBind,
 };
 
 // pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
@@ -465,6 +465,26 @@ pub async fn update_tel_handler(pool: &Pool<Postgres>, info: &UpdateTel) -> Resu
                 Err("user id is invalidate".to_string())
             }
         }
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn disbind_mail_handler(pool: &Pool<Postgres>,info: &DisBind) -> Result<String,String> {
+    let res = query!("
+        update users set email='' where id=$1
+    ",info.user_id).fetch_all(pool).await;
+    match res {
+        Ok(_) => Ok("disbind email successfully".to_string()),
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+pub async fn disbind_tel_handler(pool: &Pool<Postgres>,info: &DisBind) -> Result<String,String> {
+    let res = query!("
+        update users set telephone='' where id=$1
+    ",info.user_id).fetch_all(pool).await;
+    match res {
+        Ok(_) => Ok("disbind telephone successfully".to_string()),
         Err(e) => Err(format!("{e}")),
     }
 }

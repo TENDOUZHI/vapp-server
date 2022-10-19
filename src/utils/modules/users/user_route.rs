@@ -1,8 +1,8 @@
 use crate::utils::modules::users::{
-    ast::{LoginVerify, UpdateMail, UpdateTel, UpdateUserName, VerifyCode},
+    ast::{DisBind, LoginVerify, UpdateMail, UpdateTel, UpdateUserName, VerifyCode},
     user_handler::{
-        email_send, login_handler, login_verify_handler, register_handler, register_response,
-        update_mail_handler, update_username_handler, update_tel_handler,
+        disbind_mail_handler, email_send, login_handler, login_verify_handler, register_handler,
+        register_response, update_mail_handler, update_tel_handler, update_username_handler, disbind_tel_handler,
     },
 };
 use actix_session::Session;
@@ -208,6 +208,26 @@ pub async fn update_mail(
 pub async fn update_tel(pool: web::Data<PgPool>, payload: Json<UpdateTel>) -> impl Responder {
     let info = payload.into_inner();
     let res = update_tel_handler(&pool, &info).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e),
+    }
+}
+
+#[post("/disbind/mail")]
+pub async fn disbind_mail(pool: web::Data<PgPool>, payload: Json<DisBind>) -> impl Responder {
+    let info = payload.into_inner();
+    let res = disbind_mail_handler(&pool, &info).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e),
+    }
+}
+
+#[post("/disbind/tel")]
+pub async fn disbind_tel(pool: web::Data<PgPool>, payload: Json<DisBind>) -> impl Responder {
+    let info = payload.into_inner();
+    let res = disbind_tel_handler(&pool, &info).await;
     match res {
         Ok(v) => HttpResponse::Ok().body(v),
         Err(e) => HttpResponse::Forbidden().body(e),

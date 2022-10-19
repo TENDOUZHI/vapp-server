@@ -70,3 +70,8 @@ pub struct UpdateTel {
     pub telephone: String,
     pub password: String
 }
+
+#[derive(Deserialize,Debug)]
+pub struct DisBind {
+    pub user_id: i32
+}

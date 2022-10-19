@@ -12,7 +12,7 @@ use actix_web::http::header;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use utils::modules::programs::programs_route::{programlist, programs_insert, programs_delete, programdata, programs_save, program_websocket};
-use utils::modules::users::user_route::{verify, update_username, update_mail, update_tel};
+use utils::modules::users::user_route::{verify, update_username, update_mail, update_tel, disbind_mail, disbind_tel};
 use std::env;
 use utils::{
     lib::{echo, hello},
@@ -45,6 +45,8 @@ async fn main() -> std::io::Result<()> {
             .service(update_username)
             .service(update_mail)
             .service(update_tel)
+            .service(disbind_mail)
+            .service(disbind_tel)
             .service(echo)
             .service(email_pass_code)
             .service(programlist)
