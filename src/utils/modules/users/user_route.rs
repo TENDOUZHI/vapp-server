@@ -1,8 +1,8 @@
 use crate::utils::modules::users::{
-    ast::{DisBind, LoginVerify, UpdateMail, UpdateTel, UpdateUserName, VerifyCode},
+    ast::{DisBind, LoginVerify, UpdateMail, UpdateTel, UpdateUserName, VerifyCode, UpdateAvatar},
     user_handler::{
         disbind_mail_handler, email_send, login_handler, login_verify_handler, register_handler,
-        register_response, update_mail_handler, update_tel_handler, update_username_handler, disbind_tel_handler,
+        register_response, update_mail_handler, update_tel_handler, update_username_handler, disbind_tel_handler, update_avatar_handler,
     },
 };
 use actix_session::Session;
@@ -175,6 +175,17 @@ pub async fn register(
             .status(StatusCode::FORBIDDEN)
             .body("register failed")
     }
+}
+
+#[post("update/avatar")]
+pub async fn update_avatar(pool: web::Data<PgPool>,payload: Json<UpdateAvatar>)-> impl Responder{
+    let info = payload.into_inner();
+    let res = update_avatar_handler(&pool, &info).await;
+    match res {
+        Ok(v) => HttpResponse::Ok().body(v),
+        Err(e) => HttpResponse::Forbidden().body(e)
+    }
+    
 }
 
 #[post("/update/username")]

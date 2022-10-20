@@ -2796,6 +2796,7 @@ dependencies = [
  "actix-web",
  "actix-web-actors",
  "async-trait",
+ "base64 0.13.0",
  "chrono",
  "dotenv",
  "futures",

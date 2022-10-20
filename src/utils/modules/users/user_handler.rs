@@ -8,16 +8,9 @@ use std::io::{Error, ErrorKind};
 use crate::utils::jwt::jwt::{check_token, genarate_token};
 
 use super::ast::{
-    CodeType, LoginPassword, LoginResponse, LoginType, LoginVerify, UpdateMail, UpdateTel,
-    UpdateUserName, DisBind,
+    CodeType, DisBind, LoginPassword, LoginResponse, LoginType, LoginVerify, UpdateAvatar,
+    UpdateMail, UpdateTel, UpdateUserName,
 };
-
-// pub fn login_response(res: Result<LoginResponse, String>) -> HttpResponse {
-//     return match res {
-//         Ok(v) => HttpResponse::Ok().body("v"),
-//         Err(e) => HttpResponse::from_error(Error::new(ErrorKind::ConnectionRefused, e)),
-//     };
-// }
 
 pub fn register_response(res: Result<String, String>) -> HttpResponse {
     return match res {
@@ -350,6 +343,42 @@ pub async fn register_handler(
     }
 }
 
+pub async fn update_avatar_handler(
+    pool: &Pool<Postgres>,
+    info: &UpdateAvatar,
+) -> Result<String, String> {
+    let res = query!(
+        "
+    select * from users where id=$1
+    ",
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
+    match res {
+        Ok(row) => {
+            if row.len() == 1 {
+                let update_res = query!(
+                    "
+                update users set avatar=$1 where id=$2
+                ",
+                    info.avatar,
+                    info.user_id
+                )
+                .fetch_all(pool)
+                .await;
+                match update_res {
+                    Ok(_) => Ok("update avatar successfully".to_string()),
+                    Err(e) => Err(format!("{e}")),
+                }
+            } else {
+                Err("user id invalidate".to_string())
+            }
+        }
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
 pub async fn update_username_handler(
     pool: &Pool<Postgres>,
     info: &UpdateUserName,
@@ -469,20 +498,30 @@ pub async fn update_tel_handler(pool: &Pool<Postgres>, info: &UpdateTel) -> Resu
     }
 }
 
-pub async fn disbind_mail_handler(pool: &Pool<Postgres>,info: &DisBind) -> Result<String,String> {
-    let res = query!("
+pub async fn disbind_mail_handler(pool: &Pool<Postgres>, info: &DisBind) -> Result<String, String> {
+    let res = query!(
+        "
         update users set email='' where id=$1
-    ",info.user_id).fetch_all(pool).await;
+    ",
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
     match res {
         Ok(_) => Ok("disbind email successfully".to_string()),
         Err(e) => Err(format!("{e}")),
     }
 }
 
-pub async fn disbind_tel_handler(pool: &Pool<Postgres>,info: &DisBind) -> Result<String,String> {
-    let res = query!("
+pub async fn disbind_tel_handler(pool: &Pool<Postgres>, info: &DisBind) -> Result<String, String> {
+    let res = query!(
+        "
         update users set telephone='' where id=$1
-    ",info.user_id).fetch_all(pool).await;
+    ",
+        info.user_id
+    )
+    .fetch_all(pool)
+    .await;
     match res {
         Ok(_) => Ok("disbind telephone successfully".to_string()),
         Err(e) => Err(format!("{e}")),
@@ -498,18 +537,25 @@ pub fn email_send(email_address: &str, verify_code: &str, code_type: CodeType) {
     let reciver = format!("Reciver <{}>", email_address);
     let title = format!("{types} code: {}", verify_code);
     let content = format!(
-        "<h3>Here is your {} approval code: {}</h3>
-        <div style='width=100%;
-        height=300px;
-        background=pink;'>{}</div>
+        "
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Ferris</title> 
+            </head> 
+            <body>
+                <h3>Here is your {} approval code:</h3>
+                <div style='width:100%;height:200px;color:#fff;background:linear-gradient(to right top,#4e4584,#dcb2ba,#c9e0a8,#b7f1fd);font-size:36px;display:flex;justify-content:center;align-items:center;'>{}</div>
+                <div style='width:100%;color:gray;display:flex;justify-content:center;align-items:center;'>your verify code is validate in 15mins</div>
+            </body>
+        </html>
         ",
         types.to_lowercase(),
         verify_code,
-        verify_code
     );
     let m = Message::builder()
-        .from("Vapp <2649821154@qq.com>".parse().unwrap())
-        .reply_to("Vapp <2649821154@qq.com>".parse().unwrap())
+        .from("Ferris <2649821154@qq.com>".parse().unwrap())
+        .reply_to("Ferris <2649821154@qq.com>".parse().unwrap())
         .to(reciver.parse().unwrap())
         .subject(title)
         .body(content)

@@ -17,7 +17,7 @@ pub struct LoginResponse {
     pub id: Option<i32>,
     pub token: Option<String>,
     pub username: Option<String>,
-    pub avatar: Option<Vec<u8>>,
+    pub avatar: Option<String>,
     pub email: Option<String>,
     pub telephone: Option<String>
 }
@@ -69,6 +69,12 @@ pub struct UpdateTel {
     pub user_id: i32,
     pub telephone: String,
     pub password: String
+}
+
+#[derive(Deserialize,Debug)]
+pub struct UpdateAvatar {
+    pub user_id: i32,
+    pub avatar: String
 }
 
 #[derive(Deserialize,Debug)]
