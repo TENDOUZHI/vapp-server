@@ -14,6 +14,11 @@ pub struct ProgramsResponse {
     pub list: Option<Vec<Programs>>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct ProgramList {
+    pub user_id: i32
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Programs {
     pub id: i32,
@@ -130,8 +135,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for ProgramSave {
                         .connect(&connect_str).await.unwrap();
                     programs_save_handler(&pool, &new_program_save).await.unwrap();
                 };
+                // await websocket
                 res.into_actor(self).spawn(ctx);
-                ctx.text(text)
+                // return message
+                ctx.text("save successfully")
             }
             Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             _ => (),

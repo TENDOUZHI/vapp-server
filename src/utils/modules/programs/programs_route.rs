@@ -10,7 +10,7 @@ use sqlx::PgPool;
 use crate::utils::modules::programs::{
     ast::{
         ProgramDelete, ProgramInsert, ProgramSave, ProgramsData, ProgramsDataResponse,
-        ProgramsResponse,
+        ProgramsResponse, ProgramList,
     },
     programs_handler::{
         programs_data_handler, programs_delete_handler, programs_handler, programs_insert_handler,
@@ -18,9 +18,10 @@ use crate::utils::modules::programs::{
     },
 };
 
-#[get("/programlist")]
-pub async fn programlist(pool: web::Data<PgPool>) -> impl Responder {
-    let res = programs_handler(&pool).await;
+#[post("/programlist")]
+pub async fn programlist(pool: web::Data<PgPool>, payload: Json<ProgramList>) -> impl Responder {
+    let info = payload.into_inner();
+    let res = programs_handler(&pool,&info).await;
     match res {
         Ok(v) => web::Json(v),
         Err(e) => {

@@ -2,11 +2,11 @@ use sqlx::{query, Pool, Postgres};
 
 use super::ast::{
     ProgramDelete, ProgramInsert, ProgramSave, Programs, ProgramsData, ProgramsDataResponse,
-    ProgramsResponse,
+    ProgramsResponse, ProgramList,
 };
 
-pub async fn programs_handler(pool: &Pool<Postgres>) -> Result<ProgramsResponse, String> {
-    let res = query!("select id, user_id, name, lastdate from programs")
+pub async fn programs_handler(pool: &Pool<Postgres>,info:&ProgramList) -> Result<ProgramsResponse, String> {
+    let res = query!("select id, user_id, name, lastdate from programs where user_id=$1",info.user_id)
         .fetch_all(pool)
         .await;
     match res {
